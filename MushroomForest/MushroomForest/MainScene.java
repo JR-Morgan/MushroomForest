@@ -1,18 +1,18 @@
 package MushroomForest;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Sphere;
+import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.GLU;
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.opengl.Texture;
 
 import GraphicsLab.*;
-import MushroomForest.Util.Vector3;
 
 public class MainScene extends GraphicsLab
 {
-	private Vector3 cameraTranslation = new Vector3();
-	private Vector3 cameraRotation = new Vector3();
+	private Vector3f cameraTranslation = new Vector3f();
+	private Vector3f cameraRotation = new Vector3f();
 	private float camRotateSpeed = 0.02f;
 	private float camTranslateSpeed = 0.005f;
 	
@@ -61,32 +61,33 @@ public class MainScene extends GraphicsLab
     {
     	//Camera
     	{
-    		{ //Camera Translation
-		    	Vector3 cameraTranslation = new Vector3();
-		    	
-		    	if		(Keyboard.isKeyDown(Keyboard.KEY_W)) cameraTranslation.setZ( camTranslateSpeed);
-		        else if (Keyboard.isKeyDown(Keyboard.KEY_S)) cameraTranslation.setZ(-camTranslateSpeed);
-		    	if		(Keyboard.isKeyDown(Keyboard.KEY_A)) cameraTranslation.setX( camTranslateSpeed);
-		        else if (Keyboard.isKeyDown(Keyboard.KEY_D)) cameraTranslation.setX(-camTranslateSpeed);
-		        
-		        this.cameraTranslation.add(cameraTranslation);
+    		{ 
+				float x = (float) Math.sin(Math.toRadians(cameraRotation.getY())) * camTranslateSpeed;
+				float z = (float) Math.cos(Math.toRadians(cameraRotation.getY())) * camTranslateSpeed;
+				
+				if (Keyboard.isKeyDown(Keyboard.KEY_D)) Vector3f.add(this.cameraTranslation, new Vector3f(-z, 0, -x), this.cameraTranslation);
+				if (Keyboard.isKeyDown(Keyboard.KEY_A)) Vector3f.add(this.cameraTranslation, new Vector3f( z, 0,  x), this.cameraTranslation);
+				if (Keyboard.isKeyDown(Keyboard.KEY_S)) Vector3f.add(this.cameraTranslation, new Vector3f( x, 0, -z), this.cameraTranslation);
+				if (Keyboard.isKeyDown(Keyboard.KEY_W)) Vector3f.add(this.cameraTranslation, new Vector3f(-x, 0,  z), this.cameraTranslation);
     		}
+
+            
     		{ //Camera Rotation
-    			Vector3 cameraRotation = new Vector3();
+    			Vector3f cameraRotation = new Vector3f();
     			
 		        if		(Keyboard.isKeyDown(Keyboard.KEY_UP))	cameraRotation.setX(-camRotateSpeed);
 		        else if	(Keyboard.isKeyDown(Keyboard.KEY_DOWN)) cameraRotation.setX( camRotateSpeed);
 		        if		(Keyboard.isKeyDown(Keyboard.KEY_LEFT)) cameraRotation.setY(-camRotateSpeed);
 		        else if	(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))cameraRotation.setY( camRotateSpeed);
 		        
-		        this.cameraRotation.add(cameraRotation);
+		        Vector3f.add(this.cameraRotation, cameraRotation, this.cameraRotation);
     		}
     		
     		
     		{ //Reset Camera
     	        if(Keyboard.isKeyDown(Keyboard.KEY_R)) {
-    	        	this.cameraRotation    = new Vector3();
-    	        	this.cameraTranslation = new Vector3();
+    	        	this.cameraRotation    = new Vector3f();
+    	        	this.cameraTranslation = new Vector3f();
     	        }
     		}
 	        
