@@ -17,6 +17,7 @@ public class MainScene extends GraphicsLab
 	private float camTranslateSpeed = 0.005f;
 	
     private final int planeList = 1;
+    private final int cilindarList = 2;
     
 
     public static void main(String args[])
@@ -50,10 +51,13 @@ public class MainScene extends GraphicsLab
         // ensure that all normals are re-normalised after transformations automatically
         GL11.glEnable(GL11.GL_NORMALIZE);
         
-        GL11.glNewList(planeList,GL11.GL_COMPILE);
-        {   drawUnitPlane();
-        }
-        GL11.glEndList();
+        GL11.glNewList(planeList,GL11.GL_COMPILE); {
+        	drawUnitPlane();
+        } GL11.glEndList();
+        
+        GL11.glNewList(cilindarList, GL11.GL_COMPILE); {
+        	drawUnitCilinder();
+        } GL11.glEndList();
     }  
         
     
@@ -162,6 +166,32 @@ public class MainScene extends GraphicsLab
             GL11.glPopAttrib();
         }
         GL11.glPopMatrix();
+        
+        //Draw Mushroom
+        GL11.glPushMatrix();
+        {
+        	applyCameraTransform();
+    		
+            // disable lighting calculations so that they don't affect
+            // the appearance of the texture 
+            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
+            GL11.glDisable(GL11.GL_LIGHTING);
+            // change the geometry colour to white so that the texture
+            // is bright and details can be seen clearly
+            Colour.RED.submit();
+            // enable texturing and bind an appropriate texture
+            //GL11.glEnable(GL11.GL_TEXTURE_2D);
+            //GL11.glBindTexture(GL11.GL_TEXTURE_2D,groundTextures.getTextureID());
+            
+            // position, scale and draw the ground plane using its display list
+            GL11.glTranslatef(10.0f,1.0f,-10.0f);
+            GL11.glScalef(1f, 1f, 1f);
+            GL11.glCallList(cilindarList);
+            
+            // disable textures and reset any local lighting changes
+            GL11.glDisable(GL11.GL_TEXTURE_2D);
+            GL11.glPopAttrib();
+        }
         
     }
     
@@ -312,5 +342,130 @@ public class MainScene extends GraphicsLab
             v5.submit();
         }
         GL11.glEnd();
+    }
+    
+    private void drawUnitCilinder()
+    {
+    	Vertex[] vertexes = {
+    			new Vertex(0.000000f,-0.500000f,-0.500000f),
+    			new Vertex(0.000000f,0.500000f,-0.500000f),
+    			new Vertex(0.097545f,-0.500000f,-0.490393f),
+    			new Vertex(0.097545f,0.500000f,-0.490393f),
+    			new Vertex(0.191342f,-0.500000f,-0.461940f),
+    			new Vertex(0.191342f,0.500000f,-0.461940f),
+    			new Vertex(0.277785f,-0.500000f,-0.415735f),
+    			new Vertex(0.277785f,0.500000f,-0.415735f),
+    			new Vertex(0.353553f,-0.500000f,-0.353553f),
+    			new Vertex(0.353553f,0.500000f,-0.353553f),
+    			new Vertex(0.415735f,-0.500000f,-0.277785f),
+    			new Vertex(0.415735f,0.500000f,-0.277785f),
+    			new Vertex(0.461940f,-0.500000f,-0.191342f),
+    			new Vertex(0.461940f,0.500000f,-0.191342f),
+    			new Vertex(0.490393f,-0.500000f,-0.097545f),
+    			new Vertex(0.490393f,0.500000f,-0.097545f),
+    			new Vertex(0.500000f,-0.500000f,-0.000000f),
+    			new Vertex(0.500000f,0.500000f,-0.000000f),
+    			new Vertex(0.490393f,-0.500000f,0.097545f),
+    			new Vertex(0.490393f,0.500000f,0.097545f),
+    			new Vertex(0.461940f,-0.500000f,0.191342f),
+    			new Vertex(0.461940f,0.500000f,0.191342f),
+    			new Vertex(0.415735f,-0.500000f,0.277785f),
+    			new Vertex(0.415735f,0.500000f,0.277785f),
+    			new Vertex(0.353553f,-0.500000f,0.353553f),
+    			new Vertex(0.353553f,0.500000f,0.353553f),
+    			new Vertex(0.277785f,-0.500000f,0.415735f),
+    			new Vertex(0.277785f,0.500000f,0.415735f),
+    			new Vertex(0.191342f,-0.500000f,0.461940f),
+    			new Vertex(0.191342f,0.500000f,0.461940f),
+    			new Vertex(0.097545f,-0.500000f,0.490393f),
+    			new Vertex(0.097545f,0.500000f,0.490393f),
+    			new Vertex(-0.000000f,-0.500000f,0.500000f),
+    			new Vertex(-0.000000f,0.500000f,0.500000f),
+    			new Vertex(-0.097545f,-0.500000f,0.490393f),
+    			new Vertex(-0.097545f,0.500000f,0.490393f),
+    			new Vertex(-0.191342f,-0.500000f,0.461940f),
+    			new Vertex(-0.191342f,0.500000f,0.461940f),
+    			new Vertex(-0.277785f,-0.500000f,0.415735f),
+    			new Vertex(-0.277785f,0.500000f,0.415735f),
+    			new Vertex(-0.353554f,-0.500000f,0.353553f),
+    			new Vertex(-0.353554f,0.500000f,0.353553f),
+    			new Vertex(-0.415735f,-0.500000f,0.277785f),
+    			new Vertex(-0.415735f,0.500000f,0.277785f),
+    			new Vertex(-0.461940f,-0.500000f,0.191341f),
+    			new Vertex(-0.461940f,0.500000f,0.191341f),
+    			new Vertex(-0.490393f,-0.500000f,0.097545f),
+    			new Vertex(-0.490393f,0.500000f,0.097545f),
+    			new Vertex(-0.500000f,-0.500000f,-0.000000f),
+    			new Vertex(-0.500000f,0.500000f,-0.000000f),
+    			new Vertex(-0.490393f,-0.500000f,-0.097546f),
+    			new Vertex(-0.490393f,0.500000f,-0.097546f),
+    			new Vertex(-0.461940f,-0.500000f,-0.191342f),
+    			new Vertex(-0.461940f,0.500000f,-0.191342f),
+    			new Vertex(-0.415734f,-0.500000f,-0.277786f),
+    			new Vertex(-0.415734f,0.500000f,-0.277786f),
+    			new Vertex(-0.353553f,-0.500000f,-0.353554f),
+    			new Vertex(-0.353553f,0.500000f,-0.353554f),
+    			new Vertex(-0.277785f,-0.500000f,-0.415735f),
+    			new Vertex(-0.277785f,0.500000f,-0.415735f),
+    			new Vertex(-0.191341f,-0.500000f,-0.461940f),
+    			new Vertex(-0.191341f,0.500000f,-0.461940f),
+    			new Vertex(-0.097544f,-0.500000f,-0.490393f),
+    			new Vertex(-0.097544f,0.500000f,-0.490393f)	
+    	};
+    	
+    	int[][] faces = {
+			{1,2,4,3},
+			{3,4,6,5},
+			{5,6,8,7},
+			{7,8,10,9},
+			{9,10,12,11},
+			{11,12,14,13},
+			{13,14,16,15},
+			{15,16,18,17},
+			{17,18,20,19},
+			{19,20,22,21},
+			{21,22,24,23},
+			{23,24,26,25},
+			{25,26,28,27},
+			{27,28,30,29},
+			{29,30,32,31},
+			{31,32,34,33},
+			{33,34,36,35},
+			{35,36,38,37},
+			{37,38,40,39},
+			{39,40,42,41},
+			{41,42,44,43},
+			{43,44,46,45},
+			{45,46,48,47},
+			{47,48,50,49},
+			{49,50,52,51},
+			{51,52,54,53},
+			{53,54,56,55},
+			{55,56,58,57},
+			{57,58,60,59},
+			{59,60,62,61},
+			//{4,2,64,62,60,58,56,54,52,50,48,46,44,42,40,38,36,34,32,30,28,26,24,22,20,18,16,14,12,10,8,6},
+			{61,62,64,63},
+			{63,64,2,1},
+			//{1,3,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63}
+    	};
+    	
+    	
+    	for(int[] face : faces) {
+    		
+    		GL11.glBegin(GL11.GL_POLYGON);
+            {
+            	
+                new Normal(vertexes[face[3] -1].toVector(),vertexes[face[0]-1].toVector(),vertexes[face[1]-1].toVector(),vertexes[face[2]-1].toVector()).submit();
+                
+                vertexes[face[3]-1].submit();
+                vertexes[face[0]-1].submit();
+                vertexes[face[1]-1].submit();
+                vertexes[face[2]-1].submit();
+            }
+            GL11.glEnd();
+    	}
+        
+
     }
 }
