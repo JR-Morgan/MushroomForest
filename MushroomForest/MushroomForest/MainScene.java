@@ -9,6 +9,7 @@ import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.opengl.Texture;
 
 import GraphicsLab.*;
+import MushroomForest.Models.OBJLoader;
 import MushroomForest.Models.UnitCube;
 import MushroomForest.Models.UnitCylinder;
 import MushroomForest.Models.UnitPlane;
@@ -17,8 +18,8 @@ public class MainScene extends GraphicsLab
 {
 	private Vector3f cameraTranslation = new Vector3f();
 	private Vector3f cameraRotation = new Vector3f();
-	private float camRotateSpeedX = 0.015f, camRotateSpeedY = 0.01f;
-	private float camTranslateSpeed = 0.005f;
+	private float camRotateSpeedX = 0.15f, camRotateSpeedY = 0.1f;
+	private float camTranslateSpeed = 0.025f;
 	
     private final int planeList = 1;
     private final int cylinderList = 2;
@@ -66,11 +67,14 @@ public class MainScene extends GraphicsLab
         } GL11.glEndList();
         
         GL11.glNewList(cylinderList, GL11.GL_COMPILE); {
-        	UnitCylinder.getInstance().draw();
+        	OBJLoader.ParseFromFile("OBJ/monkey.obj").draw();
+        	//OBJLoader.ParseFromFile("OBJ/cylinder.obj").draw();
+        	//UnitCylinder.getInstance().draw();
         } GL11.glEndList();
         
         GL11.glNewList(cubeList, GL11.GL_COMPILE); {
-        	UnitCube.getInstance().draw();
+        	OBJLoader.ParseFromFile("OBJ/cube.obj").draw();
+        	//UnitCube.getInstance().draw();
         } GL11.glEndList();
     }  
         

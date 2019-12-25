@@ -35,7 +35,7 @@ public class UnitPlane extends Model
 			},
 			new Face[]
 			{
-				new Face(new int[] {4,3,2,1}, new int[] {1,2,3,4})
+				new Face(new Integer[] {4,3,2,1}, new Integer[] {1,2,3,4})
 			}
 		);
     }

@@ -52,12 +52,12 @@ public class UnitCube extends Model
 				new Vector2f(0.875f, 0.75f)
     		},
     		new Face[] {
-	    		new Face( new int[] {1,5,7,3}, new int[] {1,2,3,4}),
-	    		new Face( new int[] {4,3,7,8}, new int[] {5,6,7,8}),
-	    		new Face( new int[] {8,7,5,6}, new int[] {8,7,9,10}),
-	    		new Face( new int[] {6,2,4,8}, new int[] {10,11,12,13}),
-	    		new Face( new int[] {2,1,3,4}, new int[] {14,15,16,17}),
-	    		new Face( new int[] {6,5,1,2}, new int[] {18,19,20,11}),
+	    		new Face( new Integer[] {1,5,7,3}, new Integer[] {1,2,3,4}),
+	    		new Face( new Integer[] {4,3,7,8}, new Integer[] {5,6,7,8}),
+	    		new Face( new Integer[] {8,7,5,6}, new Integer[] {8,7,9,10}),
+	    		new Face( new Integer[] {6,2,4,8}, new Integer[] {10,11,12,13}),
+	    		new Face( new Integer[] {2,1,3,4}, new Integer[] {14,15,16,17}),
+	    		new Face( new Integer[] {6,5,1,2}, new Integer[] {18,19,20,11}),
     		}
     	);
 	}
