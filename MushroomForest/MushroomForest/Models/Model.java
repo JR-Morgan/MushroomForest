@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.vector.Vector2f;
 
 import GraphicsLab.Normal;
 import GraphicsLab.Vertex;
+import MushroomForest.Utill.Face;
 
 /**
  * This class encapsulates a 3D Model storing it's vertexes, faces, and normals.<br>
@@ -16,19 +18,22 @@ public class Model
 {
 	protected Vertex[] vertexes;
 	
-	protected int[][] faces;
+	protected Vector2f[] uv;
+	
+	protected Face[] faces;
 	
 	protected Normal[] normals;
 	
-	public Model(Vertex[] vertexes, int[][] faces) {
-		this(vertexes, faces, calculateNormals(vertexes, faces));
+	
+	public Model(Vertex[] vertexes, Vector2f[] uv, Face[] faces) {
+		this(vertexes, uv, faces, calculateNormals(vertexes, faces));
 	}
 	
-	public Model(Vertex[] vertexes, int[][] faces, Normal[] normals) {
+	public Model(Vertex[] vertexes, Vector2f[] uv, Face[] faces, Normal[] normals) {
 		this.vertexes = vertexes;
+		this.uv = uv;
 		this.faces = faces;
 		this.normals = normals;
-		
 	}
 
 	/**
@@ -41,11 +46,19 @@ public class Model
     		GL11.glBegin(GL11.GL_POLYGON);
             {              
                 normals[i].submit();
-        		        		
-                vertexes[faces[i][3]-1].submit();
-                vertexes[faces[i][0]-1].submit();
-                vertexes[faces[i][1]-1].submit();
-                vertexes[faces[i][2]-1].submit();
+                
+                GL11.glTexCoord2f(uv[faces[i].vt[3]-1].getX(),uv[faces[i].vt[3]-1].getY());
+                vertexes[faces[i].v[3]-1].submit();
+                
+                GL11.glTexCoord2f(uv[faces[i].vt[0]-1].getX(),uv[faces[i].vt[0]-1].getY());
+                vertexes[faces[i].v[0]-1].submit();
+                
+                GL11.glTexCoord2f(uv[faces[i].vt[1]-1].getX(),uv[faces[i].vt[1]-1].getY());
+                vertexes[faces[i].v[1]-1].submit();
+                
+                GL11.glTexCoord2f(uv[faces[i].vt[2]-1].getX(),uv[faces[i].vt[2]-1].getY());
+                vertexes[faces[i].v[2]-1].submit();
+                
             }
             GL11.glEnd();
     	}
@@ -57,25 +70,25 @@ public class Model
 	 * @param faces
 	 * @return an array of {@link Normal}s for each face
 	 */
-	private static Normal[] calculateNormals(Vertex[] vertexes, int[][] faces) {
+	private static Normal[] calculateNormals(Vertex[] vertexes, Face[] faces) {
 		Normal[] normals = new Normal[faces.length];
 		int index = 0;
-		for(int[] face : faces) {
+		for(Face face : faces) {
             {
        		
             	float nX = 0f;
                 float nZ = 0f;
                 float nY = 0f;
-        		for(int vertIndex = 0; vertIndex < face.length; vertIndex++)
+        		for(int vertIndex = 0; vertIndex < face.v.length; vertIndex++)
         		{
-        			nX += (vertexes[face[vertIndex] - 1].getY()-vertexes[face[(vertIndex +1) % (face.length)] - 1].getY())*
-        				  (vertexes[face[vertIndex] - 1].getZ()+vertexes[face[(vertIndex +1) % (face.length)] - 1].getZ());
+        			nX += (vertexes[face.v[vertIndex] - 1].getY()-vertexes[face.v[(vertIndex +1) % (face.v.length)] - 1].getY())*
+        				  (vertexes[face.v[vertIndex] - 1].getZ()+vertexes[face.v[(vertIndex +1) % (face.v.length)] - 1].getZ());
         			
-        			nY += (vertexes[face[vertIndex] - 1].getZ()-vertexes[face[(vertIndex +1) % (face.length)] - 1].getZ())*
-          				  (vertexes[face[vertIndex] - 1].getX()+vertexes[face[(vertIndex +1) % (face.length)] - 1].getX());
+        			nY += (vertexes[face.v[vertIndex] - 1].getZ()-vertexes[face.v[(vertIndex +1) % (face.v.length)] - 1].getZ())*
+          				  (vertexes[face.v[vertIndex] - 1].getX()+vertexes[face.v[(vertIndex +1) % (face.v.length)] - 1].getX());
         			
-        			nZ += (vertexes[face[vertIndex] - 1].getX()-vertexes[face[(vertIndex +1) % (face.length)] - 1].getX())*
-          				  (vertexes[face[vertIndex] - 1].getY()+vertexes[face[(vertIndex +1) % (face.length)] - 1].getY());
+        			nZ += (vertexes[face.v[vertIndex] - 1].getX()-vertexes[face.v[(vertIndex +1) % (face.v.length)] - 1].getX())*
+          				  (vertexes[face.v[vertIndex] - 1].getY()+vertexes[face.v[(vertIndex +1) % (face.v.length)] - 1].getY());
         		}
         		
                 
@@ -91,11 +104,15 @@ public class Model
 		return vertexes;
 	};
 	
+	public Vector2f[] getTextureCoordinates() {
+		return uv;
+	}
+	
 	public Normal[] getNormals() {
 		return normals;
 	};
 	
-	public int[][] getFaces() {
+	public Face[] getFaces() {
 		return faces;
 	}
 }

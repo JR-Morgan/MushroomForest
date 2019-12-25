@@ -1,6 +1,7 @@
 package MushroomForest;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Sphere;
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.GLU;
@@ -23,6 +24,8 @@ public class MainScene extends GraphicsLab
     private final int cylinderList = 2;
     private final int cubeList = 3;
     
+    private Texture groundTextures;
+    
 
     public static void main(String args[])
     {   new MainScene().run(WINDOWED,"Mushroom Forest", 0.01f);
@@ -30,6 +33,9 @@ public class MainScene extends GraphicsLab
 
     protected void initScene() throws Exception
     {
+    	groundTextures = loadTexture("textures/grass.bmp");
+    	
+    	
         // global ambient light level
         float globalAmbient[]   = {0.2f,  0.2f,  0.2f, 1.0f};
         // set the global ambient lighting
@@ -132,8 +138,8 @@ public class MainScene extends GraphicsLab
             // is bright and details can be seen clearly
             Colour.WHITE.submit();
             // enable texturing and bind an appropriate texture
-            //GL11.glEnable(GL11.GL_TEXTURE_2D);
-            //GL11.glBindTexture(GL11.GL_TEXTURE_2D,groundTextures.getTextureID());
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D,groundTextures.getTextureID());
             
             // position, scale and draw the ground plane using its display list
             GL11.glTranslatef(0.0f,-1.0f,-10.0f);
@@ -209,8 +215,8 @@ public class MainScene extends GraphicsLab
 
             Colour.RED.submit();
             // enable texturing and bind an appropriate texture
-            //GL11.glEnable(GL11.GL_TEXTURE_2D);
-            //GL11.glBindTexture(GL11.GL_TEXTURE_2D,groundTextures.getTextureID());
+            GL11.glEnable(GL11.GL_TEXTURE_2D);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D,groundTextures.getTextureID());
             
             // position, scale and draw the ground plane using its display list
             GL11.glTranslatef(10.0f,1.0f,-10.0f);
@@ -225,6 +231,22 @@ public class MainScene extends GraphicsLab
        
         
     }
+    
+    
+    protected void setSceneCamera()
+    {
+        super.setSceneCamera();
+       
+        
+       	//GLU.gluLookAt(
+       	//		cameraTranslation.getX(),
+       	//		cameraTranslation.getY(),
+       	//		cameraTranslation.getZ(),
+       	//		0,
+       	//		0,
+       	//		0,
+       	//		0, 1, 0);
+   }
     
     private void applyCameraTransform() {
     	GL11.glRotatef(cameraRotation.getX(), 1, 0, 0);
