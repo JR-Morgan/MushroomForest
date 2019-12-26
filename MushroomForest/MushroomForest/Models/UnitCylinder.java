@@ -5,6 +5,12 @@ import org.lwjgl.util.vector.Vector2f;
 import GraphicsLab.Vertex;
 import MushroomForest.Utill.Face;
 
+/**
+ * Models a cylinder of unit size<br>
+ * 
+ * This class was used for testing purposes prior to {@link OBJLoader}
+ * @author Jedd Morgan
+ */
 public class UnitCylinder extends Model
 {
 	private static Model instance;

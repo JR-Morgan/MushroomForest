@@ -7,5 +7,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LWJGL/native"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="org.eclipse.jdt.annotation_2.2.300.v20190328-1431.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>

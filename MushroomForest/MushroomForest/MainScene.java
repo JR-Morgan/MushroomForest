@@ -5,6 +5,11 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.GLU;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.opengl.Texture;
 
@@ -13,79 +18,131 @@ import MushroomForest.Models.OBJLoader;
 import MushroomForest.Models.UnitCube;
 import MushroomForest.Models.UnitCylinder;
 import MushroomForest.Models.UnitPlane;
-
+/**
+ * <h1>Mushroom Forest</h1>
+ * This is the Main Scene and entry point for this program<br>
+ * This is a 3D Scene - an interactive demo showing multiple animations and interactions.<br>
+ * <br>
+ * TODO: scene graph
+ * <br>
+ * @author Jedd Morgan
+ *
+ */
 public class MainScene extends GraphicsLab
 {
 	private Vector3f cameraTranslation = new Vector3f();
 	private Vector3f cameraRotation = new Vector3f();
-	private float camRotateSpeedX = 0.15f, camRotateSpeedY = 0.1f;
-	private float camTranslateSpeed = 0.025f;
+	private float camRotateSpeedX = 0.1f, camRotateSpeedY = 0.05f;
+	private float camTranslateSpeed = 0.005f;
 	
-    private final int planeList = 1;
-    private final int cylinderList = 2;
-    private final int cubeList = 3;
+	private int planeList = 1, cylinderList = 2, mushroomList = 3;
+	
+    private List<RenderInstance> renderInstances;
     
     private Texture groundTextures;
     
+    private Random rand;
+    
 
     public static void main(String args[])
-    {   new MainScene().run(WINDOWED,"Mushroom Forest", 0.01f);
+    {   new MainScene().run(WINDOWED,"Mushroom Forest", 1f);
     }
 
     protected void initScene() throws Exception
     {
-    	groundTextures = loadTexture("textures/grass.bmp");
+    	rand = new Random();
     	
+    	renderInstances = new ArrayList<RenderInstance>();
     	
-        // global ambient light level
-        float globalAmbient[]   = {0.2f,  0.2f,  0.2f, 1.0f};
-        // set the global ambient lighting
-        GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT,FloatBuffer.wrap(globalAmbient));
-
-        // the first light for the scene is soft blue...
-        float diffuse0[]  = { 0.2f,  0.2f, 0.4f, 1.0f};
-        // ...with a very dim ambient contribution...
-        float ambient0[]  = { 0.05f,  0.05f, 0.05f, 1.0f};
-        // ...and is positioned above the viewpoint
-        float position0[] = { 0.0f, 10.0f, 0.0f, 1.0f};
-
-        // supply OpenGL with the properties for the first light
-        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, FloatBuffer.wrap(ambient0));
-        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, FloatBuffer.wrap(diffuse0));
-        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, FloatBuffer.wrap(diffuse0));
-        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, FloatBuffer.wrap(position0));
-        // enable the first light
-        GL11.glEnable(GL11.GL_LIGHT0);
-
-        // enable lighting calculations
-        GL11.glEnable(GL11.GL_LIGHTING);
-        // ensure that all normals are re-normalised after transformations automatically
-        GL11.glEnable(GL11.GL_NORMALIZE);
+    	{ //Textures
+    		groundTextures = loadTexture("textures/grass.bmp");
+    	}
+    	
+    	{ //Lighting
+	        // global ambient light level
+	        float globalAmbient[]   = {0.2f,  0.2f,  0.2f, 1.0f};
+	        // set the global ambient lighting
+	        GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT,FloatBuffer.wrap(globalAmbient));
+	
+	        // the first light for the scene is soft blue...
+	        float diffuse0[]  = { 0.2f,  0.2f, 0.4f, 1.0f};
+	        // ...with a very dim ambient contribution...
+	        float ambient0[]  = { 0.05f,  0.05f, 0.05f, 1.0f};
+	        // ...and is positioned above the viewpoint
+	        float position0[] = { 0.0f, 10.0f, 0.0f, 1.0f};
+	
+	        // supply OpenGL with the properties for the first light
+	        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, FloatBuffer.wrap(ambient0));
+	        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, FloatBuffer.wrap(diffuse0));
+	        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, FloatBuffer.wrap(diffuse0));
+	        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, FloatBuffer.wrap(position0));
+	        // enable the first light
+	        GL11.glEnable(GL11.GL_LIGHT0);
+	
+	        // enable lighting calculations
+	        GL11.glEnable(GL11.GL_LIGHTING);
+	        // ensure that all normals are re-normalised after transformations automatically
+	        GL11.glEnable(GL11.GL_NORMALIZE);
+	        
+	    } 
         
-        GL11.glNewList(planeList,GL11.GL_COMPILE); {
-        	UnitPlane.getInstance().draw();
-        } GL11.glEndList();
+    	{ //Display Lists
+	        GL11.glNewList(planeList,GL11.GL_COMPILE); {
+	        	UnitPlane.getInstance().draw();
+	        } GL11.glEndList();
+	        
+	        GL11.glNewList(cylinderList, GL11.GL_COMPILE); {
+	        	//OBJLoader.ParseFromFile("OBJ/monkey.obj").draw();
+	        	OBJLoader.ParseFromFile("OBJ/cylinder.obj").draw();
+	        	//UnitCylinder.getInstance().draw();
+	        } GL11.glEndList();
+	        
+	        GL11.glNewList(mushroomList, GL11.GL_COMPILE); {
+	        	OBJLoader.ParseFromFile("OBJ/mushroom.obj").draw();
+	        	//UnitCube.getInstance().draw();
+	        } GL11.glEndList();
+	        Mushroom.displayListIndex = mushroomList;
+	    }
         
-        GL11.glNewList(cylinderList, GL11.GL_COMPILE); {
-        	OBJLoader.ParseFromFile("OBJ/monkey.obj").draw();
-        	//OBJLoader.ParseFromFile("OBJ/cylinder.obj").draw();
-        	//UnitCylinder.getInstance().draw();
-        } GL11.glEndList();
+    	{ // RenderInstances
+    		renderInstances.add(new RenderInstance(planeList, 			     //displayListIndex
+    											   new Vector3f(0.0f,-1.0f,0.0f),   //position
+							    				   new Vector3f(0f,0f,0f),    //rotation
+							    				   new Vector3f(25f,1f,25f),  //scale
+							    				   Colour.WHITE,     	      //colour
+							    				   groundTextures));             //texture
+    		
+    		
+    		//Mushrooms
+	        //for(int i = 0; i < 100; i++) {
+	        //	Mushroom m = new Mushroom(new Vector3f(rand.nextFloat() * 10,
+	        //										   -1,
+	        //										   rand.nextFloat() * 10));
+	        //	m.setScale(1);
+	        //	renderInstances.add(m);
+	        //}
+	        
+	        for(int x = 0; x < 7; x++) {
+	        	for(int z = 0; z < 7; z++) {
+		        	Mushroom m = new Mushroom(new Vector3f(x*2,
+		        										   -1,
+		        										   z*2));
+		        	renderInstances.add(m);
+	        	}
+	        }
+    	}
         
-        GL11.glNewList(cubeList, GL11.GL_COMPILE); {
-        	OBJLoader.ParseFromFile("OBJ/cube.obj").draw();
-        	//UnitCube.getInstance().draw();
-        } GL11.glEndList();
-    }  
+       
+    } 
         
     
     protected void checkSceneInput()
     {
     	//Camera
     	{
-    		{ 
-				float x = (float) Math.sin(Math.toRadians(cameraRotation.getY())) * camTranslateSpeed;
-				float z = (float) Math.cos(Math.toRadians(cameraRotation.getY())) * camTranslateSpeed;
+    		{ //Update Camera Translation
+				float x = (float) Math.sin(Math.toRadians(cameraRotation.getY())) * camTranslateSpeed * (float)Timer.getDeltaTime();
+				float z = (float) Math.cos(Math.toRadians(cameraRotation.getY())) * camTranslateSpeed * (float)Timer.getDeltaTime();
 				
 				if (Keyboard.isKeyDown(Keyboard.KEY_D)) Vector3f.add(this.cameraTranslation, new Vector3f(-z, 0, -x), this.cameraTranslation);
 				if (Keyboard.isKeyDown(Keyboard.KEY_A)) Vector3f.add(this.cameraTranslation, new Vector3f( z, 0,  x), this.cameraTranslation);
@@ -94,13 +151,13 @@ public class MainScene extends GraphicsLab
     		}
 
             
-    		{ //Camera Rotation
+    		{ //Update Camera Rotation
     			Vector3f cameraRotation = new Vector3f();
     			
-		        if		(Keyboard.isKeyDown(Keyboard.KEY_UP))	cameraRotation.setX(-camRotateSpeedY);
-		        else if	(Keyboard.isKeyDown(Keyboard.KEY_DOWN)) cameraRotation.setX( camRotateSpeedY);
-		        if		(Keyboard.isKeyDown(Keyboard.KEY_LEFT)) cameraRotation.setY(-camRotateSpeedX);
-		        else if	(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))cameraRotation.setY( camRotateSpeedX);
+		        if		(Keyboard.isKeyDown(Keyboard.KEY_UP))	cameraRotation.setX(-camRotateSpeedY * (float)Timer.getDeltaTime());
+		        else if	(Keyboard.isKeyDown(Keyboard.KEY_DOWN)) cameraRotation.setX( camRotateSpeedY * (float)Timer.getDeltaTime());
+		        if		(Keyboard.isKeyDown(Keyboard.KEY_LEFT)) cameraRotation.setY(-camRotateSpeedX * (float)Timer.getDeltaTime());
+		        else if	(Keyboard.isKeyDown(Keyboard.KEY_RIGHT))cameraRotation.setY( camRotateSpeedX * (float)Timer.getDeltaTime());
 		        
 		        Vector3f.add(this.cameraRotation, cameraRotation, this.cameraRotation);
     		}
@@ -118,121 +175,34 @@ public class MainScene extends GraphicsLab
     	
     	
     	
-    	
     }
     
     protected void updateScene()
     {
-        
+    	Timer.update();
+    	
+    	for(RenderInstance r : renderInstances) {
+        	r.update(getAnimationScale());
+        }
     }
+    
+    /**
+     * Renders every {@link RenderInstance} in {@link MainScene.renderInstance}
+     */
     protected void renderScene()
     {
     	GL11.glLoadIdentity();
-    	
-        // draw the ground plane
-        GL11.glPushMatrix();
-        {
-        	applyCameraTransform();
-    		
-            // disable lighting calculations so that they don't affect
-            // the appearance of the texture 
-            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
-            GL11.glDisable(GL11.GL_LIGHTING);
-            // change the geometry colour to white so that the texture
-            // is bright and details can be seen clearly
-            Colour.WHITE.submit();
-            // enable texturing and bind an appropriate texture
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D,groundTextures.getTextureID());
-            
-            // position, scale and draw the ground plane using its display list
-            GL11.glTranslatef(0.0f,-1.0f,-10.0f);
-            GL11.glScalef(25.0f, 1.0f, 20.0f);
-            GL11.glCallList(planeList);
-            
-            // disable textures and reset any local lighting changes
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glPopAttrib();
-        }
-        GL11.glPopMatrix();
         
-        // draw the back plane
-        GL11.glPushMatrix();
-        {
-        	applyCameraTransform();
-            // disable lighting calculations so that they don't affect
-            // the appearance of the texture 
-            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
-            GL11.glDisable(GL11.GL_LIGHTING);
-            // change the geometry colour to white so that the texture
-            // is bright and details can be seen clearly
-            Colour.WHITE.submit();
-            // enable texturing and bind an appropriate texture
-            //GL11.glEnable(GL11.GL_TEXTURE_2D);
-            //GL11.glBindTexture(GL11.GL_TEXTURE_2D,skyNightTextures.getTextureID());
-            
-            // position, scale and draw the back plane using its display list
-            GL11.glTranslatef(0.0f,4.0f,-20.0f);
-            GL11.glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
-            GL11.glScalef(25.0f, 1.0f, 10.0f);
-            GL11.glCallList(planeList);
-            
-            // disable textures and reset any local lighting changes
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glPopAttrib();
-        }
-        GL11.glPopMatrix();
-        
-        //Draw Cube
-        GL11.glPushMatrix();
-        {
-        	applyCameraTransform();
-    		
-            // disable lighting calculations so that they don't affect the appearance of the texture 
-            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
-            GL11.glDisable(GL11.GL_LIGHTING);
+        for(RenderInstance r : renderInstances) {
+        	GL11.glPushMatrix();
+        	
+        	if(!isViewingAxis()) {
+        		applyCameraTransform();
+        	}
+        	r.render();
 
-            Colour.GREEN.submit();
-            // enable texturing and bind an appropriate texture
-            //GL11.glEnable(GL11.GL_TEXTURE_2D);
-			// GL11.glBindTexture(GL11.GL_TEXTURE_2D,groundTextures.getTextureID());
-            
-            // position, scale and draw the ground plane using its display list
-            GL11.glTranslatef(0.0f,0.0f,0.0f);
-            GL11.glScalef(1f, 2f, 1f);
-            GL11.glCallList(cubeList);
-            
-            // disable textures and reset any local lighting changes
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glPopAttrib();
+            GL11.glPopMatrix();
         }
-        
-        //Draw Cylinder
-        GL11.glPushMatrix();
-        {
-        	//applyCameraTransform();
-    		
-            // disable lighting calculations so that they don't affect
-            // the appearance of the texture 
-            GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
-            GL11.glDisable(GL11.GL_LIGHTING);
-
-            Colour.RED.submit();
-            // enable texturing and bind an appropriate texture
-            GL11.glEnable(GL11.GL_TEXTURE_2D);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D,groundTextures.getTextureID());
-            
-            // position, scale and draw the ground plane using its display list
-            GL11.glTranslatef(10.0f,1.0f,-10.0f);
-            GL11.glScalef(1f, 1f, 1f);
-            GL11.glCallList(cylinderList);
-            
-            // disable textures and reset any local lighting changes
-            GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GL11.glPopAttrib();
-        }
-        
-       
         
     }
     
@@ -241,6 +211,10 @@ public class MainScene extends GraphicsLab
     {
         super.setSceneCamera();
        
+        
+        //TODO: Consider using gluLookAt for camera translation and rotation rather than applyCameraTransform()
+        //This does however require a rework of the camera rotation since gluLookAt wants a direction vector rather than a rotation angle
+        //This could be achieved with a rotation matrix however current solution 
         
        	//GLU.gluLookAt(
        	//		cameraTranslation.getX(),
@@ -252,6 +226,12 @@ public class MainScene extends GraphicsLab
        	//		0, 1, 0);
    }
     
+    /**
+     * Applies the camera translation and rotation<br>
+     * <br>
+	 * This method should be called between<br>
+	 * {@link GL11.glPushMatrix} and {@link GL11.glPopMatrix} method calls during the rendering of every model     
+	 * */
     private void applyCameraTransform() {
     	GL11.glRotatef(cameraRotation.getX(), 1, 0, 0);
 		GL11.glRotatef(cameraRotation.getY(), 0, 1, 0);
@@ -260,7 +240,8 @@ public class MainScene extends GraphicsLab
     }
     
     protected void cleanupScene()
-    {// empty
+    {
+    	
     }
 
 }

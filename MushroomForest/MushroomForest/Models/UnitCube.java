@@ -5,6 +5,12 @@ import org.lwjgl.util.vector.Vector2f;
 import GraphicsLab.Vertex;
 import MushroomForest.Utill.Face;
 
+/**
+ * Models a cube of unit size
+ * 
+ * @author Jedd Morgan
+ *
+ */
 public class UnitCube extends Model
 {
 	private static Model instance;

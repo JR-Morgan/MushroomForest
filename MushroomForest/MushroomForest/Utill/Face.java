@@ -1,8 +1,9 @@
 package MushroomForest.Utill;
 
 /**
- * Models a obj face
- * @author Jedd Model
+ * Models a OBJ face
+ * 
+ * @author Jedd Morgan
  *
  */
 public class Face
