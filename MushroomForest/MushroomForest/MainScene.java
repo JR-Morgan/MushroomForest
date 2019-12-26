@@ -1,7 +1,9 @@
 package MushroomForest;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Sphere;
+import org.lwjgl.util.vector.Matrix3f;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.glu.Cylinder;
 import org.lwjgl.util.glu.GLU;
@@ -30,10 +32,15 @@ import MushroomForest.Models.UnitPlane;
  */
 public class MainScene extends GraphicsLab
 {
-	private Vector3f cameraTranslation = new Vector3f();
+	private Vector3f cameraTranslation = new Vector3f(0f,2f,0f);
 	private Vector3f cameraRotation = new Vector3f();
 	private float camRotateSpeedX = 0.1f, camRotateSpeedY = 0.05f;
 	private float camTranslateSpeed = 0.005f;
+	
+	
+	private Vector3f camRotation = new Vector3f(1f,0f,0f);
+	private float cameraZoom = 10f;
+	private float camRotateSpeed = 0.1f, camZoomSpeed = 0.05f;
 	
 	private int planeList = 1, cylinderList = 2, mushroomList = 3;
 	
@@ -41,7 +48,8 @@ public class MainScene extends GraphicsLab
     
     private Texture groundTextures;
     
-    private Random rand;
+    private int mushroomFieldWidth = 1, mushroomFieldHeigth = 1;
+    private int maxMushroomCount = 150;
     
 
     public static void main(String args[])
@@ -50,7 +58,6 @@ public class MainScene extends GraphicsLab
 
     protected void initScene() throws Exception
     {
-    	rand = new Random();
     	
     	renderInstances = new ArrayList<RenderInstance>();
     	
@@ -98,42 +105,61 @@ public class MainScene extends GraphicsLab
 	        } GL11.glEndList();
 	        
 	        GL11.glNewList(mushroomList, GL11.GL_COMPILE); {
-	        	OBJLoader.ParseFromFile("OBJ/mushroom.obj").draw();
+	        	OBJLoader.ParseFromFile("OBJ/mushroom_medium.obj").draw();
 	        	//UnitCube.getInstance().draw();
 	        } GL11.glEndList();
 	        Mushroom.displayListIndex = mushroomList;
 	    }
         
-    	{ // RenderInstances
-    		renderInstances.add(new RenderInstance(planeList, 			     //displayListIndex
-    											   new Vector3f(0.0f,-1.0f,0.0f),   //position
-							    				   new Vector3f(0f,0f,0f),    //rotation
-							    				   new Vector3f(25f,1f,25f),  //scale
-							    				   Colour.WHITE,     	      //colour
-							    				   groundTextures));             //texture
+    	
     		
-    		
-    		//Mushrooms
-	        //for(int i = 0; i < 100; i++) {
-	        //	Mushroom m = new Mushroom(new Vector3f(rand.nextFloat() * 10,
-	        //										   -1,
-	        //										   rand.nextFloat() * 10));
-	        //	m.setScale(1);
-	        //	renderInstances.add(m);
-	        //}
-	        
-	        for(int x = 0; x < 7; x++) {
-	        	for(int z = 0; z < 7; z++) {
-		        	Mushroom m = new Mushroom(new Vector3f(x*2,
-		        										   -1,
-		        										   z*2));
-		        	renderInstances.add(m);
-	        	}
-	        }
-    	}
+    	generateRenderInstances();
+    	
         
        
     } 
+    
+    private void generateRenderInstances() {
+    	
+    	renderInstances = new ArrayList<RenderInstance>();
+    	
+    	 	renderInstances.add(new RenderInstance(planeList, 			     //displayListIndex
+    											   new Vector3f(-10.0f,0.0f,-10.0f),//position
+							    				   new Vector3f(0f,0f,0f),    //rotation
+							    				   new Vector3f(20f,1f,20f),  //scale
+							    				   Colour.WHITE,     	      //colour
+							    				   groundTextures));          //texture
+    		
+    		renderInstances.add(new RenderInstance(planeList, 			     //displayListIndex
+												   new Vector3f(10.0f,0.0f,-10.0f),//position
+								 				   new Vector3f(0f,0f,0f),    //rotation
+								 				   new Vector3f(20f,1f,20f),  //scale
+								 				   Colour.WHITE,     	      //colour
+								 				   groundTextures));          //texture
+    		
+    		renderInstances.add(new RenderInstance(planeList, 			     //displayListIndex
+												   new Vector3f(-10.0f,0.0f,10.0f),//position
+								 				   new Vector3f(0f,0f,0f),    //rotation
+								 				   new Vector3f(20f,1f,20f),  //scale
+								 				   Colour.WHITE,     	      //colour
+								 				   groundTextures));          //texture    
+    		renderInstances.add(new RenderInstance(planeList, 			     //displayListIndex
+												   new Vector3f(10.0f,0.0f,10.0f),//position
+								 				   new Vector3f(0f,0f,0f),    //rotation
+								 				   new Vector3f(20f,1f,20f),  //scale
+								 				   Colour.WHITE,     	      //colour
+								 				   groundTextures));          //texture   
+    	
+    	for(int x = 0; x < mushroomFieldWidth; x++) {
+        	for(int z = 0; z < mushroomFieldHeigth; z++) {
+	        	Mushroom m = new Mushroom(new Vector3f(x - mushroomFieldWidth / 2,
+	        										   0,
+	        										   z - mushroomFieldHeigth / 2));
+	        	renderInstances.add(m);
+        	}
+        }
+    	
+    }
         
     
     protected void checkSceneInput()
@@ -144,10 +170,10 @@ public class MainScene extends GraphicsLab
 				float x = (float) Math.sin(Math.toRadians(cameraRotation.getY())) * camTranslateSpeed * (float)Timer.getDeltaTime();
 				float z = (float) Math.cos(Math.toRadians(cameraRotation.getY())) * camTranslateSpeed * (float)Timer.getDeltaTime();
 				
-				if (Keyboard.isKeyDown(Keyboard.KEY_D)) Vector3f.add(this.cameraTranslation, new Vector3f(-z, 0, -x), this.cameraTranslation);
-				if (Keyboard.isKeyDown(Keyboard.KEY_A)) Vector3f.add(this.cameraTranslation, new Vector3f( z, 0,  x), this.cameraTranslation);
-				if (Keyboard.isKeyDown(Keyboard.KEY_S)) Vector3f.add(this.cameraTranslation, new Vector3f( x, 0, -z), this.cameraTranslation);
-				if (Keyboard.isKeyDown(Keyboard.KEY_W)) Vector3f.add(this.cameraTranslation, new Vector3f(-x, 0,  z), this.cameraTranslation);
+				if (Keyboard.isKeyDown(Keyboard.KEY_A)) Vector3f.add(this.cameraTranslation, new Vector3f(-z, 0, -x), this.cameraTranslation);
+				if (Keyboard.isKeyDown(Keyboard.KEY_D)) Vector3f.add(this.cameraTranslation, new Vector3f( z, 0,  x), this.cameraTranslation);
+				if (Keyboard.isKeyDown(Keyboard.KEY_W)) Vector3f.add(this.cameraTranslation, new Vector3f( x, 0, -z), this.cameraTranslation);
+				if (Keyboard.isKeyDown(Keyboard.KEY_S)) Vector3f.add(this.cameraTranslation, new Vector3f(-x, 0,  z), this.cameraTranslation);
     		}
 
             
@@ -166,8 +192,81 @@ public class MainScene extends GraphicsLab
     		{ //Reset Camera
     	        if(Keyboard.isKeyDown(Keyboard.KEY_R)) {
     	        	this.cameraRotation    = new Vector3f();
-    	        	this.cameraTranslation = new Vector3f();
+    	        	this.cameraTranslation = new Vector3f(0f,2f,0f);
     	        }
+    		}
+	        
+    		
+    		
+    		{ // Key Events
+    			while(Keyboard.next())
+    		    {
+    		        if(Keyboard.getEventKey() == Keyboard.KEY_EQUALS && !Keyboard.getEventKeyState())
+    		        {
+    		        	if(mushroomFieldWidth * mushroomFieldHeigth < maxMushroomCount) {
+	    		        	mushroomFieldWidth++;
+	        				mushroomFieldHeigth++;
+	        				generateRenderInstances();
+    		        	}
+    		        } else if(Keyboard.getEventKey() == Keyboard.KEY_MINUS && !Keyboard.getEventKeyState())
+    		        {
+    		        	if(mushroomFieldWidth * mushroomFieldHeigth > 0) {
+    		        		mushroomFieldWidth--;
+            				mushroomFieldHeigth--;
+            				generateRenderInstances();
+    		        	}
+    		        	
+    		        }
+    		        
+    		    }
+    		}
+    		
+    		
+    	}
+    	
+    	
+    	
+    	
+    }
+    /*
+    protected void _checkSceneInput()
+    {
+    	//Camera
+    	{
+    		
+    		
+    		
+    		
+    		{ // Update Camera
+    			if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
+    				cameraZoom += camZoomSpeed;
+    	        }
+    			if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
+    				cameraZoom -= camZoomSpeed;
+    	        }
+    			if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
+    				float x = (float) Math.cos(camRotateSpeed);
+    				float z = (float) Math.sin(camRotateSpeed);
+
+    				camRotation.setX(camRotation.getX() * x - camRotation.getZ() * z);
+    				camRotation.setZ(camRotation.getX() * z + camRotation.getZ() * x);
+    	        }
+    			if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
+    				float x = (float) Math.cos(-camRotateSpeed);
+    				float z = (float) Math.sin(-camRotateSpeed);
+
+    				camRotation.setX(camRotation.getX() * x - camRotation.getZ() * z);
+    				camRotation.setZ(camRotation.getX() * z + camRotation.getZ() * x);
+    	        }
+    		}
+
+    		
+    		
+    		{ //Reset Camera
+    	        if(Keyboard.isKeyDown(Keyboard.KEY_R)) {
+    	        	
+    	        }
+    	        
     		}
 	        
     	}
@@ -175,7 +274,7 @@ public class MainScene extends GraphicsLab
     	
     	
     	
-    }
+    }*/
     
     protected void updateScene()
     {
@@ -191,8 +290,7 @@ public class MainScene extends GraphicsLab
      */
     protected void renderScene()
     {
-    	GL11.glLoadIdentity();
-        
+    	        
         for(RenderInstance r : renderInstances) {
         	GL11.glPushMatrix();
         	
@@ -215,11 +313,19 @@ public class MainScene extends GraphicsLab
         //TODO: Consider using gluLookAt for camera translation and rotation rather than applyCameraTransform()
         //This does however require a rework of the camera rotation since gluLookAt wants a direction vector rather than a rotation angle
         //This could be achieved with a rotation matrix however current solution 
+        //GLU.gluLookAt(
+       	//		20f,
+       	//		1f,
+       	//		1f,
+       	//		0f,
+       	//		0f,
+       	//		0f,
+       	//		0f, 0f, 1f);
         
-       	//GLU.gluLookAt(
-       	//		cameraTranslation.getX(),
-       	//		cameraTranslation.getY(),
-       	//		cameraTranslation.getZ(),
+        //GLU.gluLookAt(
+       	//		camRotation.getX() * cameraZoom,
+       	//		camRotation.getY() * cameraZoom +1,
+       	//		camRotation.getZ() * cameraZoom,
        	//		0,
        	//		0,
        	//		0,
@@ -233,10 +339,10 @@ public class MainScene extends GraphicsLab
 	 * {@link GL11.glPushMatrix} and {@link GL11.glPopMatrix} method calls during the rendering of every model     
 	 * */
     private void applyCameraTransform() {
-    	GL11.glRotatef(cameraRotation.getX(), 1, 0, 0);
-		GL11.glRotatef(cameraRotation.getY(), 0, 1, 0);
-		GL11.glRotatef(cameraRotation.getZ(), 0, 0, 1);
-		GL11.glTranslatef(cameraTranslation.getX(), cameraTranslation.getY(), cameraTranslation.getZ());
+    		GL11.glRotatef(cameraRotation.getX(), 1, 0, 0);
+    		GL11.glRotatef(cameraRotation.getY(), 0, 1, 0);
+    		GL11.glRotatef(cameraRotation.getZ(), 0, 0, 1);
+    		GL11.glTranslatef(-cameraTranslation.getX(), -cameraTranslation.getY(), -cameraTranslation.getZ());    	
     }
     
     protected void cleanupScene()

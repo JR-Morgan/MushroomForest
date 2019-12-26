@@ -2,6 +2,7 @@ package MushroomForest;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Renderable;
 import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 
@@ -12,7 +13,7 @@ import GraphicsLab.Colour;
  * @author Jedd Morgan
  *
  */
-public class RenderInstance
+public class RenderInstance implements Renderable
 {
 	protected static int animationNumber = 1;
 	

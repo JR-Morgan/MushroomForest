@@ -1,5 +1,6 @@
 package MushroomForest;
 
+import org.lwjgl.Sys;
 import org.lwjgl.util.vector.Vector3f;
 
 /**
@@ -20,22 +21,28 @@ public class Mushroom extends RenderInstance
 	public void update(float animationScale) {
 		switch(animationNumber) {
 			case 0: {
-				this.setScale((float) Math.abs(Math.sin((Timer.getTotalTime() / animationScale / 1000000000l) + this.position.getX()/10)));
+				this.setScale(CircularScale(animationScale, this.position.getX() / 10));
 				break;
 			}
 			case 1: {
-				this.setScale((float) Math.abs(Math.sin((Timer.getTotalTime() / animationScale / 1000000000l) + (this.position.getX() + this.position.getZ())/10)));
-				break;
-			}
-			case 2: {
-				this.position.setX((float) (this.position.getX() + Math.sin(((Timer.getTotalTime() / animationScale / 100000000l) + this.position.getX()))/10));
-				this.position.setZ((float) (this.position.getZ() + Math.cos(((Timer.getTotalTime() / animationScale / 100000000l) + this.position.getZ()))/10));
+				this.setScale(CircularScale(animationScale, (this.position.getX() + this.position.getZ())/10));
 				break;
 			}
 		}
-		
 	}
 	
+	/**
+	 * 
+	 * @param animationScale - the scale of the animation ( how fast the animation plays )
+	 * @param phaseOffset - the phase offset
+	 * @return the new scale
+	 */
+	private static float CircularScale(float phaseScale, float phaseOffset) {
+		
+		return (float) Math.abs(Math.sin(Math.toDegrees(Sys.getTime()/50000f) + phaseOffset));
+		
+		
+	}
 	
 	
 }

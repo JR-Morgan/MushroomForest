@@ -10,7 +10,6 @@ import org.lwjgl.Sys;
  */
 public class Timer
 {
-	private static long totalTime = 0;
 	private static long lastFrame;
 	private static long currentFrame;
 	private static float animationScale;
@@ -19,7 +18,6 @@ public class Timer
 	 * This should be called every frame in the main update loop.
 	 */
 	public static void update() {
-		totalTime+= currentFrame;
 		lastFrame = currentFrame;
 		currentFrame = Sys.getTime();
 		
@@ -32,14 +30,6 @@ public class Timer
 	public static double getDeltaTime() {
 		return currentFrame - lastFrame;
 	}
-	
-	/**
-	 * @return total time elapsed since the start of the scene
-	 */
-	public static double getTotalTime() {
-		return totalTime;
-	}
-	
 	
 	/**
 	 * Sets the animation scale for the scene
