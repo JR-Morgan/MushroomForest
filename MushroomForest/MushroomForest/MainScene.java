@@ -1,24 +1,16 @@
 package MushroomForest;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.Sphere;
-import org.lwjgl.util.vector.Matrix3f;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector;
 import org.lwjgl.util.vector.Vector3f;
-import org.lwjgl.util.glu.Cylinder;
-import org.lwjgl.util.glu.GLU;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.opengl.Texture;
 
 import GraphicsLab.*;
 import MushroomForest.Models.OBJLoader;
-import MushroomForest.Models.UnitCube;
-import MushroomForest.Models.UnitCylinder;
 import MushroomForest.Models.UnitPlane;
 /**
  * <h1>Mushroom Forest</h1>
@@ -37,28 +29,25 @@ public class MainScene extends GraphicsLab
 	private float camRotateSpeedX = 0.1f, camRotateSpeedY = 0.05f;
 	private float camTranslateSpeed = 0.005f;
 	
+	private HashMap<String, Integer> displayLists;
 	
-	private Vector3f camRotation = new Vector3f(1f,0f,0f);
-	private float cameraZoom = 10f;
-	private float camRotateSpeed = 0.1f, camZoomSpeed = 0.05f;
-	
-	private int planeList = 1, cylinderList = 2, mushroomList = 3;
 	
     private List<RenderInstance> renderInstances;
     
     private Texture groundTextures;
     
     private int mushroomFieldWidth = 1, mushroomFieldHeigth = 1;
-    private int maxMushroomCount = 150;
+    private int maxMushroomCount = 500;
     
 
     public static void main(String args[])
     {   new MainScene().run(WINDOWED,"Mushroom Forest", 1f);
     }
 
+    @Override
     protected void initScene() throws Exception
     {
-    	
+    	displayLists = new HashMap<String, Integer>();
     	renderInstances = new ArrayList<RenderInstance>();
     	
     	{ //Textures
@@ -94,21 +83,38 @@ public class MainScene extends GraphicsLab
 	    } 
         
     	{ //Display Lists
-	        GL11.glNewList(planeList,GL11.GL_COMPILE); {
+    		displayLists.put("plane", 1);
+	        GL11.glNewList(1,GL11.GL_COMPILE); {
 	        	UnitPlane.getInstance().draw();
 	        } GL11.glEndList();
 	        
-	        GL11.glNewList(cylinderList, GL11.GL_COMPILE); {
-	        	//OBJLoader.ParseFromFile("OBJ/monkey.obj").draw();
-	        	OBJLoader.ParseFromFile("OBJ/cylinder.obj").draw();
-	        	//UnitCylinder.getInstance().draw();
+	        //displayLists.put("test", 2);
+	        //GL11.glNewList(2, GL11.GL_COMPILE); {
+	        //	//OBJLoader.ParseFromFile("OBJ/monkey.obj").draw();
+	        //	OBJLoader.ParseFromFile("OBJ/cylinder.obj").draw();
+	        //	//UnitCylinder.getInstance().draw();
+	        //} GL11.glEndList();
+	        
+	        displayLists.put("sMushroom", 2);
+	        Mushroom.displayListIndex =  3;
+	        GL11.glNewList(2, GL11.GL_COMPILE); {
+	        	OBJLoader.ParseFromFile("OBJ/mushroom_low.obj").draw();
 	        } GL11.glEndList();
 	        
-	        GL11.glNewList(mushroomList, GL11.GL_COMPILE); {
+	        displayLists.put("mMushroom", 3);
+	        GL11.glNewList(3, GL11.GL_COMPILE); {
 	        	OBJLoader.ParseFromFile("OBJ/mushroom_medium.obj").draw();
-	        	//UnitCube.getInstance().draw();
 	        } GL11.glEndList();
-	        Mushroom.displayListIndex = mushroomList;
+	        displayLists.put("LMushroom", 4);
+	        GL11.glNewList(3, GL11.GL_COMPILE); {
+	        	OBJLoader.ParseFromFile("OBJ/mushroom_high.obj").draw();
+	        } GL11.glEndList();
+	        
+	        displayLists.put("butterflyWing", 5);
+	        GL11.glNewList(4, GL11.GL_COMPILE); {
+	        	OBJLoader.ParseFromFile("OBJ/butterfly.obj").draw();
+	        } GL11.glEndList();
+	        
 	    }
         
     	
@@ -119,49 +125,70 @@ public class MainScene extends GraphicsLab
        
     } 
     
+    /**
+     * This method will generate / regenerate {@link RenderInstances} in the scene.<br>
+     * This method is used on first initialisation of the scene<br>
+     * And when the objects in the scene need to be regenerated e.g. to change the number of mushrooms<br>
+     */
     private void generateRenderInstances() {
     	
     	renderInstances = new ArrayList<RenderInstance>();
     	
-    	 	renderInstances.add(new RenderInstance(planeList, 			     //displayListIndex
+    	{ // Ground Planes
+    	 	renderInstances.add(new RenderInstance(displayLists.get("plane"),       //displayListIndex
     											   new Vector3f(-10.0f,0.0f,-10.0f),//position
-							    				   new Vector3f(0f,0f,0f),    //rotation
-							    				   new Vector3f(20f,1f,20f),  //scale
-							    				   Colour.WHITE,     	      //colour
-							    				   groundTextures));          //texture
+							    				   new Vector3f(0f,0f,0f),          //rotation
+							    				   new Vector3f(20f,1f,20f),        //scale
+							    				   Colour.WHITE,     	            //colour
+							    				   groundTextures));                //texture
     		
-    		renderInstances.add(new RenderInstance(planeList, 			     //displayListIndex
+    		renderInstances.add(new RenderInstance(displayLists.get("plane"), 	   //displayListIndex
 												   new Vector3f(10.0f,0.0f,-10.0f),//position
-								 				   new Vector3f(0f,0f,0f),    //rotation
-								 				   new Vector3f(20f,1f,20f),  //scale
-								 				   Colour.WHITE,     	      //colour
-								 				   groundTextures));          //texture
+								 				   new Vector3f(0f,0f,0f),         //rotation
+								 				   new Vector3f(20f,1f,20f),       //scale
+								 				   Colour.WHITE,     	           //colour
+								 				   groundTextures));               //texture
     		
-    		renderInstances.add(new RenderInstance(planeList, 			     //displayListIndex
+    		renderInstances.add(new RenderInstance(displayLists.get("plane"),      //displayListIndex
 												   new Vector3f(-10.0f,0.0f,10.0f),//position
-								 				   new Vector3f(0f,0f,0f),    //rotation
-								 				   new Vector3f(20f,1f,20f),  //scale
-								 				   Colour.WHITE,     	      //colour
-								 				   groundTextures));          //texture    
-    		renderInstances.add(new RenderInstance(planeList, 			     //displayListIndex
-												   new Vector3f(10.0f,0.0f,10.0f),//position
-								 				   new Vector3f(0f,0f,0f),    //rotation
-								 				   new Vector3f(20f,1f,20f),  //scale
-								 				   Colour.WHITE,     	      //colour
-								 				   groundTextures));          //texture   
+								 				   new Vector3f(0f,0f,0f),         //rotation
+								 				   new Vector3f(20f,1f,20f),       //scale
+								 				   Colour.WHITE,     	           //colour
+								 				   groundTextures));               //texture   
+    		
+    		renderInstances.add(new RenderInstance(displayLists.get("plane"),      //displayListIndex
+												   new Vector3f(10.0f,0.0f,10.0f), //position
+								 				   new Vector3f(0f,0f,0f),         //rotation
+								 				   new Vector3f(20f,1f,20f),       //scale
+								 				   Colour.WHITE,     	           //colour
+								 				   groundTextures));               //texture   
+    		
+    		renderInstances.add(new RenderInstance(displayLists.get("butterflyWing"), //displayListIndex
+												   new Vector3f(0.0f,1.0f,0.0f),   //position
+								 				   new Vector3f(0f,0f,0f),         //rotation
+								 				   new Vector3f(1f,1f,1f),         //scale
+								 				   Colour.WHITE,     	           //colour
+								 				   groundTextures));               //texture   
+    	}
     	
+    	//Generate Mushrooms
+    		
     	for(int x = 0; x < mushroomFieldWidth; x++) {
         	for(int z = 0; z < mushroomFieldHeigth; z++) {
-	        	Mushroom m = new Mushroom(new Vector3f(x - mushroomFieldWidth / 2,
+	        	Mushroom m = new Mushroom(new Vector3f((x) - mushroomFieldWidth / 2,
 	        										   0,
-	        										   z - mushroomFieldHeigth / 2));
+	        										   (z) - mushroomFieldHeigth / 2));
 	        	renderInstances.add(m);
         	}
         }
     	
     }
         
-    
+    /**
+     * {@inheritDoc}<br>
+     * This method will check for user input controlling the camera, and interactions within the scene
+     */
+    @Override
     protected void checkSceneInput()
     {
     	//Camera
@@ -206,14 +233,18 @@ public class MainScene extends GraphicsLab
     		        	if(mushroomFieldWidth * mushroomFieldHeigth < maxMushroomCount) {
 	    		        	mushroomFieldWidth++;
 	        				mushroomFieldHeigth++;
+	        				checkMushroomLOD();
 	        				generateRenderInstances();
+	        				
     		        	}
     		        } else if(Keyboard.getEventKey() == Keyboard.KEY_MINUS && !Keyboard.getEventKeyState())
     		        {
     		        	if(mushroomFieldWidth * mushroomFieldHeigth > 0) {
     		        		mushroomFieldWidth--;
             				mushroomFieldHeigth--;
+            				checkMushroomLOD();
             				generateRenderInstances();
+            				
     		        	}
     		        	
     		        }
@@ -228,54 +259,22 @@ public class MainScene extends GraphicsLab
     	
     	
     }
-    /*
-    protected void _checkSceneInput()
-    {
-    	//Camera
-    	{
-    		
-    		
-    		
-    		
-    		{ // Update Camera
-    			if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
-    				cameraZoom += camZoomSpeed;
-    	        }
-    			if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
-    				cameraZoom -= camZoomSpeed;
-    	        }
-    			if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
-    				float x = (float) Math.cos(camRotateSpeed);
-    				float z = (float) Math.sin(camRotateSpeed);
-
-    				camRotation.setX(camRotation.getX() * x - camRotation.getZ() * z);
-    				camRotation.setZ(camRotation.getX() * z + camRotation.getZ() * x);
-    	        }
-    			if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
-    				float x = (float) Math.cos(-camRotateSpeed);
-    				float z = (float) Math.sin(-camRotateSpeed);
-
-    				camRotation.setX(camRotation.getX() * x - camRotation.getZ() * z);
-    				camRotation.setZ(camRotation.getX() * z + camRotation.getZ() * x);
-    	        }
-    		}
-
-    		
-    		
-    		{ //Reset Camera
-    	        if(Keyboard.isKeyDown(Keyboard.KEY_R)) {
-    	        	
-    	        }
-    	        
-    		}
-	        
-    	}
-    	
-    	
-    	
-    	
-    }*/
     
+    /**
+     * This method will check if a quarter of the max number of mushrooms ({@link maxMushroomCount}) are being drawn<br>
+     * If over a quarter are drawn, then this will switch out to a lower level of detail model<br>
+     * <br>
+     * sMushroom should have roughly a quarter of the number of faces as mMushroom, so 4 times as many can be drawn<br>
+     */
+    private void checkMushroomLOD() {
+    	if(mushroomFieldWidth * mushroomFieldHeigth > maxMushroomCount / 4) {
+    		Mushroom.displayListIndex = displayLists.get("sMushroom");
+    	} else {
+    		Mushroom.displayListIndex = displayLists.get("mMushroom");
+    	}
+    }
+        
+    @Override
     protected void updateScene()
     {
     	Timer.update();
@@ -288,6 +287,7 @@ public class MainScene extends GraphicsLab
     /**
      * Renders every {@link RenderInstance} in {@link MainScene.renderInstance}
      */
+    @Override
     protected void renderScene()
     {
     	        
@@ -304,7 +304,7 @@ public class MainScene extends GraphicsLab
         
     }
     
-    
+    @Override
     protected void setSceneCamera()
     {
         super.setSceneCamera();
@@ -312,15 +312,7 @@ public class MainScene extends GraphicsLab
         
         //TODO: Consider using gluLookAt for camera translation and rotation rather than applyCameraTransform()
         //This does however require a rework of the camera rotation since gluLookAt wants a direction vector rather than a rotation angle
-        //This could be achieved with a rotation matrix however current solution 
-        //GLU.gluLookAt(
-       	//		20f,
-       	//		1f,
-       	//		1f,
-       	//		0f,
-       	//		0f,
-       	//		0f,
-       	//		0f, 0f, 1f);
+        //This could be achieved with a rotation matrix however current solution of rotating the entire world is suitable.
         
         //GLU.gluLookAt(
        	//		camRotation.getX() * cameraZoom,
@@ -333,21 +325,17 @@ public class MainScene extends GraphicsLab
    }
     
     /**
-     * Applies the camera translation and rotation<br>
+     * Applies the camera translation and rotation to an object<br>
      * <br>
 	 * This method should be called between<br>
-	 * {@link GL11.glPushMatrix} and {@link GL11.glPopMatrix} method calls during the rendering of every model     
+	 * {@link GL11.glPushMatrix} and {@link GL11.glPopMatrix} method calls during the rendering of every model
+	 * that should move relative to the camera
 	 * */
     private void applyCameraTransform() {
     		GL11.glRotatef(cameraRotation.getX(), 1, 0, 0);
     		GL11.glRotatef(cameraRotation.getY(), 0, 1, 0);
     		GL11.glRotatef(cameraRotation.getZ(), 0, 0, 1);
     		GL11.glTranslatef(-cameraTranslation.getX(), -cameraTranslation.getY(), -cameraTranslation.getZ());    	
-    }
-    
-    protected void cleanupScene()
-    {
-    	
     }
 
 }

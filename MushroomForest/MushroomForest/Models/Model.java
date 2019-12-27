@@ -48,22 +48,11 @@ public class Model
                 normals[i].submit();
                 
                 for(int j = 0; j < faces[i].v.length; j++) {
-                	GL11.glTexCoord2f(uv[faces[i].vt[j]-1].getX(),uv[faces[i].vt[j]-1].getY());
+                	if(uv.length > 0) {
+                		GL11.glTexCoord2f(uv[faces[i].vt[j]-1].getX(),uv[faces[i].vt[j]-1].getY());
+                	}
                     vertexes[faces[i].v[j]-1].submit();
                 }
-                /*
-                GL11.glTexCoord2f(uv[faces[i].vt[3]-1].getX(),uv[faces[i].vt[3]-1].getY());
-                vertexes[faces[i].v[3]-1].submit();
-                
-                GL11.glTexCoord2f(uv[faces[i].vt[0]-1].getX(),uv[faces[i].vt[0]-1].getY());
-                vertexes[faces[i].v[0]-1].submit();
-                
-                GL11.glTexCoord2f(uv[faces[i].vt[1]-1].getX(),uv[faces[i].vt[1]-1].getY());
-                vertexes[faces[i].v[1]-1].submit();
-                
-                GL11.glTexCoord2f(uv[faces[i].vt[2]-1].getX(),uv[faces[i].vt[2]-1].getY());
-                vertexes[faces[i].v[2]-1].submit();
-                */
                 
             }
             GL11.glEnd();

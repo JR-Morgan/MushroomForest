@@ -75,7 +75,14 @@ public final class OBJLoader
 				{
 					String[] arr = parameters[i].split("/");
 					vertexIndecies			 .add(Integer.parseInt(arr[0]));
-					textureCoordinateIndecies.add(Integer.parseInt(arr[1]));
+					
+					if(arr.length == 2) {
+						textureCoordinateIndecies.add(Integer.parseInt(arr[1]));
+					} if(arr.length == 3) {
+						textureCoordinateIndecies.add(Integer.parseInt(arr[2]));
+					}
+					
+					
 				}
 				faces.add(new Face(vertexIndecies.toArray(new Integer[vertexIndecies.size()]),
 						  	       vertexIndecies.toArray(new Integer[vertexIndecies.size()])));
@@ -85,8 +92,8 @@ public final class OBJLoader
 		
 		
 		return new Model(vertexes.toArray(new Vertex[vertexes.size()]),
-				  textureCoordinates.toArray(new Vector2f[textureCoordinates.size()]),
-				  faces.toArray(new Face[faces.size()]));
+				  		 textureCoordinates.toArray(new Vector2f[textureCoordinates.size()]),
+				  		 faces.toArray(new Face[faces.size()]));
 		
 		
 	}
