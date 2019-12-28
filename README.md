@@ -16,6 +16,7 @@ The animation can be controlled by the user
 - W, S, A, and D - will move the camera
 - Arrow Keys	 - will rotate the camera
 - \- and + keys will decrease and increase the number of mushrooms
+- X, Y, and Z will view the axis view, from there up and down arrow keys will increase / decrease  zoom
 
 ## Animation
 
