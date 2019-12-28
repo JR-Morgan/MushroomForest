@@ -26,9 +26,9 @@ public class Normal
 	 * Based on computing two vectors in the plane, then taking the vector cross product
 	 * between these to compute the normal; to get the sign right the vectors must be
 	 * passed in anti-clockwise order.
-	 * @param vec1
-	 * @param vec2
-	 * @param vec3
+	 * @param vec1 - first vector pos
+	 * @param vec2 - second vector pos
+	 * @param vec3 - third vector pos
 	 */
 	public Normal(Vector vec1, Vector vec2, Vector vec3)
 	{
@@ -51,10 +51,10 @@ public class Normal
 	 * Based on computing two vectors in the plane, then taking the vector cross product
 	 * between these to compute the normal; to get the sign right the vectors must be
 	 * passed in anti-clockwise order.
-	 * @param vec1
-	 * @param vec2
-	 * @param vec3
-	 * @param vec4
+	 * @param vec1 - first vector pos
+	 * @param vec2 - second vector pos
+	 * @param vec3 - third vector pos
+	 * @param vec4 - fourth vector pos
 	 */
     public Normal(Vector vec1, Vector vec2, Vector vec3, Vector vec4)
     {

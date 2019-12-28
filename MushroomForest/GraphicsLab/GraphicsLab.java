@@ -102,6 +102,7 @@ public abstract class GraphicsLab
     }
     /**
      * Set the viewing distance
+     * @param dist - new distance
      */
     public final void setViewingAxisDistance(float dist)
     {   viewingAxisDistance = dist;
@@ -174,9 +175,8 @@ public abstract class GraphicsLab
         }
     }
     /**
-     * Creates application resources and sets some initial OpenGL states
-     * 
-     * @throws Exception
+     * Creates application resources and sets some initial OpenGL states     * 
+     * @throws Exception -
      */
     private void init() throws Exception
     {
@@ -199,7 +199,7 @@ public abstract class GraphicsLab
     /**
      * Creates a windowed or full screen display for this sample
      * 
-     * @throws Exception
+     * @throws Exception - 
      */
     private void createWindow() throws Exception
     {
@@ -208,7 +208,7 @@ public abstract class GraphicsLab
         
         //This is a much better way to specify the display mode if you are just going to hard code it to a specific value
         //getting a list of all display modes can take a while for some monitors(multiple seconds freeze time)
-        displayMode = new DisplayMode(2560,1440);
+        displayMode = new DisplayMode(3840,2160);
         
         /*DisplayMode availableModes[] = Display.getAvailableDisplayModes();
         
@@ -388,6 +388,7 @@ public abstract class GraphicsLab
 
     /**
      * Initialises the sample scene
+     * @throws Exception -
      */
     protected abstract void initScene() throws Exception;
     /**
@@ -414,6 +415,7 @@ public abstract class GraphicsLab
      * 
      * @param path The absolute or relative path of the image file to load as a texture
      * @return A Texture object
+     * @throws Exception - exception
      */
     protected final Texture loadTexture(String path) throws Exception {
     	Texture tex = TextureLoader.getTexture("BMP", ResourceLoader.getResourceAsStream(path), true);
@@ -431,6 +433,7 @@ public abstract class GraphicsLab
      * @param path The absolute or relative path of the image file to load as a texture
      * @param imageType The type of image, e.g. "BMP", "JPG", "PNG"
      * @return A Texture object
+     * @throws Exception - exception
      */
     protected final Texture loadTexture(String path, String imageType) throws Exception {
     	Texture tex = TextureLoader.getTexture(imageType, ResourceLoader.getResourceAsStream(path), true);

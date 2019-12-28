@@ -46,9 +46,11 @@ public class RenderInstance implements Renderable
 	 * 
 	 * @param displayListIndex - Index of the model that should be drawn when this {@link RenderInstance} is rendered ( {@link render} )
 	 * @param position - The translation that should be applied on render
+	 * @param rotationOrigin - The origin of the rotation ( if null the position will be used as origin )
 	 * @param rotation - The rotation that should be applied on render
 	 * @param scale - 	The scale that should be applied on render
 	 * @param colour -  The colour that should be applied
+	 * @param disableLighting - if lighting should be disable for this object
 	 * @param texture - The texture that should be drawn (if null, no texture will be applied)
 	 * @param children - Array of nested RenderInstances
 	 */
@@ -72,6 +74,7 @@ public class RenderInstance implements Renderable
 	/**
 	 * Update method is called every frame<br>
 	 * This method is designed to be overridden by sub classes<br>
+	 * @param animationScale - the animationScale
 	 */
 	public void update(float animationScale) {
 		
@@ -84,7 +87,7 @@ public class RenderInstance implements Renderable
 	 * If texture is null then no texture will be drawn.<br>
 	 * <br>
 	 * This method should be called between<br>
-	 * {@link GL11.glPushMatrix} and {@link GL11.glPopMatrix} method calls          
+	 * {@code GL11.glPushMatrix} and {@code GL11.glPopMatrix} method calls          
 	 */
 	public void render() {	
         

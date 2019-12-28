@@ -68,11 +68,11 @@ import MushroomForest.Models.UnitPlane;
  * This is a 3D Scene - an interactive demo showing multiple animations and interactions.<br>
  * <br>
  *  The user can interact with this scene<br>
- * <br><ul>
- *  <li>W S A and D will move the camera around the scene</li><br>
- * <li>Arrow Keys will rotate the camera</li><br><br>
- * <li>The = key will increse the number of mushrooms</li><br>
- * <li>The - key will decrese the number of mushrooms</li><br>
+ * <br>
+ *  W S A and D will move the camera around the scene<br>
+ * Arrow Keys will rotate the camera<br><br>
+ * The = key will increse the number of mushrooms<br>
+ * The - key will decrese the number of mushrooms<br>
  * <br>
  * @author Jedd Morgan
  *
@@ -197,7 +197,7 @@ public class MainScene extends GraphicsLab
     } 
     
     /**
-     * This method will generate / regenerate {@link RenderInstances} in the scene.<br>
+     * This method will generate / regenerate {@link RenderInstance} in the scene.<br>
      * This method is used on first initialisation of the scene<br>
      * And when the objects in the scene need to be regenerated e.g. to change the number of mushrooms<br>
      */
@@ -438,7 +438,7 @@ public class MainScene extends GraphicsLab
     }
     
     /**
-     * Renders every {@link RenderInstance} in {@link MainScene.renderInstance}
+     * Renders every RenderInsatnce in { @code MainScene.renderInstance}
      */
     @Override
     protected void renderScene()
@@ -481,7 +481,7 @@ public class MainScene extends GraphicsLab
      * Applies the camera translation and rotation to an object<br>
      * <br>
 	 * This method should be called between<br>
-	 * {@link GL11.glPushMatrix} and {@link GL11.glPopMatrix} method calls during the rendering of every model
+	 * {@code GL11.glPushMatrix} and {@code GL11.glPopMatrix} method calls during the rendering of every model
 	 * that should move relative to the camera
 	 * */
     private void applyCameraTransform() {

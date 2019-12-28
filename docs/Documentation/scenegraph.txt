@@ -1,0 +1,43 @@
+Scene Graph:
+ Scene origin
+ |
+ +-- [S(30,1,30) T(-15,0,-15)] Ground plane
+ |
+ +-- [S(30,1,30) T( 15,0,-15)] Ground plane
+ |
+ +-- [S(30,1,30) T(-15,0, 15)] Ground plane
+ |
+ +-- [S(30,1,30) T( 15,0, 15)] Ground plane
+ |
+ +-- [S(100,125,100) T(25,0, 25)] Large Mushroom
+ |
+ +-- [S(25,25,25) T(15,0, 20) R(0,0,10)] Medium Mushroom
+ |
+ +-- [S(50,50,50) T(-25,0, -25)] Medium Mushroom
+ |
+ +-- [S(25,25,-25) T(40,40, 40)] Medium Mushroom
+ |
+ +-- [S(45,45,45) T(-25,0, 25)] Medium Mushroom
+ |
+ +-- [T(10,14,0) R(Random(1-360) then increasing each frame) RO(0,0,0)] Butterfly
+ |   |
+ |   +-- [R(0,0, Scaling Value)] Left Wing
+ |   +-- [R(0,0, Scaling Value)] Right Wing
+ |
+ +-- [T(7,10,0f) R(Random(1-360) then increasing each frame) RO(0,0,0)] Butterfly
+ |   |
+ |   +-- [R(0,0, Scaling Value)] Left Wing
+ |   +-- [R(0,0, Scaling Value)] Right Wing
+ |
+ +-- [T(15,20,0) R(Random(1-360) then increasing each frame) RO(0,0,0))] Butterfly
+ |   |
+ |   +-- [R(0,0, Scaling Value)] Left Wing
+ |   +-- [R(0,0, Scaling Value)] Right Wing
+ |
+ +-- [T(12,25,0) R(Random(1-360) then increasing each frame) RO(0,0,0)] Butterfly
+ |   |
+ |   +-- [R(0,0, Scaling Value)] Left Wing
+ |   +-- [R(0,0, Scaling Value)] Right Wing
+ |
+ +--[T(X index,0, Z index)] Small Mushroom - Increasing as more mushrooms are added upto maxMushroomCount
+ 
