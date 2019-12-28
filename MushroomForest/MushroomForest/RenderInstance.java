@@ -18,9 +18,12 @@ public class RenderInstance implements Renderable
 	protected static int animationNumber = 1;
 	
 	protected int displayListIndex;
-	protected Vector3f position, rotation, scale;
+	protected Vector3f position, rotation, rotationOrigin, scale;
 	protected Colour colour;
 	protected Texture texture;
+	protected Boolean disableLighting;
+	
+	protected RenderInstance[] children;
 	
 	/**
 	 * 
@@ -31,9 +34,12 @@ public class RenderInstance implements Renderable
 		this(displayListIndex, 	//displayListIndex
 			 position,		  	//position
 			 new Vector3f(),   	//rotation
+			 new Vector3f(),   	//rotation origin
 			 new Vector3f(1f,1f,1f), //scale
 			 Colour.WHITE,     	//colour
-			 null);				//texture
+			 false,				//disable lighting
+			 null,				//texture
+			 null);				//children
 	}
 	
 	/**
@@ -44,19 +50,28 @@ public class RenderInstance implements Renderable
 	 * @param scale - 	The scale that should be applied on render
 	 * @param colour -  The colour that should be applied
 	 * @param texture - The texture that should be drawn (if null, no texture will be applied)
+	 * @param children - Array of nested RenderInstances
 	 */
-	public RenderInstance(int displayListIndex, Vector3f position, Vector3f rotation, Vector3f scale, Colour colour, @Nullable Texture texture) {
+	public RenderInstance(int displayListIndex, Vector3f position, Vector3f rotation, Vector3f rotationOrigin, Vector3f scale, Colour colour, Boolean disableLighting, @Nullable Texture texture, @Nullable RenderInstance[] children) {
 		this.displayListIndex = displayListIndex;
 		this.position = position;
 		this.rotation = rotation;
+		if(rotationOrigin == null) {
+			this.rotationOrigin = position;
+		} else {
+			this.rotationOrigin = rotationOrigin;
+		}
 		this.scale = scale;
 		this.colour = colour;
+		this.disableLighting = disableLighting;
 		this.texture = texture;
+		this.children = children;
 	}
 	
 
 	/**
-	 * Update method is called every frame
+	 * Update method is called every frame<br>
+	 * This method is designed to be overridden by sub classes<br>
 	 */
 	public void update(float animationScale) {
 		
@@ -74,11 +89,13 @@ public class RenderInstance implements Renderable
 	public void render() {	
         
         colour.submit();
-        
-        if(texture != null){
+
+        if(disableLighting) {
         	GL11.glPushAttrib(GL11.GL_LIGHTING_BIT);
             GL11.glDisable(GL11.GL_LIGHTING);
+        }
             
+        if(texture != null){  
 	        GL11.glEnable(GL11.GL_TEXTURE_2D);
 	        GL11.glBindTexture(GL11.GL_TEXTURE_2D,texture.getTextureID());
         }
@@ -89,10 +106,18 @@ public class RenderInstance implements Renderable
 	        				  position.getY(),
 	        				  position.getZ());
 	        
+	        GL11.glTranslatef(rotationOrigin.getX() - position.getX(),
+	        				  rotationOrigin.getY() - position.getY(),
+	        				  rotationOrigin.getZ() - position.getZ());
+	        
 	        GL11.glRotatef(rotation.getX(), 1, 0, 0);
 			GL11.glRotatef(rotation.getY(), 0, 1, 0);
 			GL11.glRotatef(rotation.getZ(), 0, 0, 1);
 	        
+			GL11.glTranslatef(-(rotationOrigin.getX() - position.getX()),
+  				  			  -(rotationOrigin.getY() - position.getY()),
+  				  			  -(rotationOrigin.getZ() - position.getZ()));
+			
 	        GL11.glScalef(scale.getX(),
 	        			  scale.getY(),
 	        		      scale.getZ());
@@ -100,6 +125,18 @@ public class RenderInstance implements Renderable
         
         // Render the Object
         GL11.glCallList(displayListIndex);
+        
+        if(children != null) {
+        	for(RenderInstance c : children) {
+        		GL11.glPushMatrix();
+        		
+			     c.render();
+			     
+			     GL11.glPopMatrix();
+			     
+        		
+        	}
+        }
         
         // Disable textures and reset any local lighting changes
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -125,6 +162,16 @@ public class RenderInstance implements Renderable
 	{
 		this.rotation = rotation;
 	}
+	public Vector3f getRotationOrigin()
+	{
+		return rotation;
+	}
+
+	public void setRotationOrigin(Vector3f rotationOrigin)
+	{
+		this.rotationOrigin = rotationOrigin;
+	}
+
 
 	public Vector3f getScale()
 	{

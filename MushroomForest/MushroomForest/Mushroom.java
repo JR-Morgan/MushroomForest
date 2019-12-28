@@ -33,7 +33,7 @@ public class Mushroom extends RenderInstance
 	
 	/**
 	 * 
-	 * @param animationScale - the scale of the animation ( how fast the animation plays )
+	 * @param phaseScale - the scale of the animation ( how fast the animation plays )
 	 * @param phaseOffset - the phase offset
 	 * @return the new scale
 	 */

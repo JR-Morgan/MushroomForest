@@ -1,3 +1,52 @@
+/* MainScene.java
+ * A Mushroom Forest, with sine wave animated mushrooms and circling butterflies
+ * 27/12/2019
+ * 
+ * Scene Graph:
+ * Scene origin
+ * |
+ * +-- [S(30,1,30) T(-15,0,-15)] Ground plane
+ * |
+ * +-- [S(30,1,30) T( 15,0,-15)] Ground plane
+ * |
+ * +-- [S(30,1,30) T(-15,0, 15)] Ground plane
+ * |
+ * +-- [S(30,1,30) T( 15,0, 15)] Ground plane
+ * |
+ * +-- [S(100,125,100) T(25,0, 25)] Large Mushroom
+ * |
+ * +-- [S(25,25,25) T(15,0, 20) R(0,0,10)] Medium Mushroom
+ * |
+ * +-- [S(50,50,50) T(-25,0, -25)] Medium Mushroom
+ * |
+ * +-- [S(25,25,-25) T(40,40, 40)] Medium Mushroom
+ * |
+ * +-- [S(45,45,45) T(-25,0, 25)] Medium Mushroom
+ * |
+ * +-- [T(10,14,0) R(Random(1-360) then increasing each frame) RO(0,0,0)] Butterfly
+ * |   |
+ * |   +-- [R(0,0, Scaling Value)] Left Wing
+ * |   +-- [R(0,0, Scaling Value)] Right Wing
+ * |
+ * +-- [T(7,10,0f) R(Random(1-360) then increasing each frame) RO(0,0,0)] Butterfly
+ * |   |
+ * |   +-- [R(0,0, Scaling Value)] Left Wing
+ * |   +-- [R(0,0, Scaling Value)] Right Wing
+ * |
+ * +-- [T(15,20,0) R(Random(1-360) then increasing each frame) RO(0,0,0))] Butterfly
+ * |   |
+ * |   +-- [R(0,0, Scaling Value)] Left Wing
+ * |   +-- [R(0,0, Scaling Value)] Right Wing
+ * |
+ * +-- [T(12,25,0) R(Random(1-360) then increasing each frame) RO(0,0,0)] Butterfly
+ * |   |
+ * |   +-- [R(0,0, Scaling Value)] Left Wing
+ * |   +-- [R(0,0, Scaling Value)] Right Wing
+ * |
+ * +--[T(X index,0, Z index)] Small Mushroom - Increasing as more mushrooms are added upto maxMushroomCount
+ * 
+ *  
+ */
 package MushroomForest;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector3f;
@@ -5,6 +54,7 @@ import org.lwjgl.util.vector.Vector3f;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.lwjgl.input.Keyboard;
 import org.newdawn.slick.opengl.Texture;
@@ -17,7 +67,12 @@ import MushroomForest.Models.UnitPlane;
  * This is the Main Scene and entry point for this program<br>
  * This is a 3D Scene - an interactive demo showing multiple animations and interactions.<br>
  * <br>
- * TODO: scene graph
+ *  The user can interact with this scene<br>
+ * <br><ul>
+ *  <li>W S A and D will move the camera around the scene</li><br>
+ * <li>Arrow Keys will rotate the camera</li><br><br>
+ * <li>The = key will increse the number of mushrooms</li><br>
+ * <li>The - key will decrese the number of mushrooms</li><br>
  * <br>
  * @author Jedd Morgan
  *
@@ -35,6 +90,8 @@ public class MainScene extends GraphicsLab
     private List<RenderInstance> renderInstances;
     
     private Texture groundTextures;
+    private Texture bigMushroomTexture;
+    private Texture smallMushroomTexture;
     
     private int mushroomFieldWidth = 1, mushroomFieldHeigth = 1;
     private int maxMushroomCount = 500;
@@ -52,11 +109,13 @@ public class MainScene extends GraphicsLab
     	
     	{ //Textures
     		groundTextures = loadTexture("textures/grass.bmp");
+    		bigMushroomTexture = loadTexture("textures/mushroom.bmp");
+    		smallMushroomTexture = loadTexture("textures/mushroom_small.bmp");
     	}
     	
     	{ //Lighting
 	        // global ambient light level
-	        float globalAmbient[]   = {0.2f,  0.2f,  0.2f, 1.0f};
+	        float globalAmbient[]   = {0.7f,  0.7f,  0.7f, 1.0f};
 	        // set the global ambient lighting
 	        GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT,FloatBuffer.wrap(globalAmbient));
 	
@@ -80,10 +139,15 @@ public class MainScene extends GraphicsLab
 	        // ensure that all normals are re-normalised after transformations automatically
 	        GL11.glEnable(GL11.GL_NORMALIZE);
 	        
+	        
 	    } 
         
     	{ //Display Lists
-    		displayLists.put("plane", 1);
+    	  //A display list is setup for each model
+    		
+    		int counter = 0;
+    		
+    		displayLists.put("plane", ++counter);
 	        GL11.glNewList(1,GL11.GL_COMPILE); {
 	        	UnitPlane.getInstance().draw();
 	        } GL11.glEndList();
@@ -95,24 +159,31 @@ public class MainScene extends GraphicsLab
 	        //	//UnitCylinder.getInstance().draw();
 	        //} GL11.glEndList();
 	        
-	        displayLists.put("sMushroom", 2);
-	        Mushroom.displayListIndex =  3;
-	        GL11.glNewList(2, GL11.GL_COMPILE); {
+	        displayLists.put("sMushroom", ++counter);
+	        GL11.glNewList(counter, GL11.GL_COMPILE); {
 	        	OBJLoader.ParseFromFile("OBJ/mushroom_low.obj").draw();
 	        } GL11.glEndList();
 	        
-	        displayLists.put("mMushroom", 3);
-	        GL11.glNewList(3, GL11.GL_COMPILE); {
+	        displayLists.put("mMushroom", ++counter);
+	        Mushroom.displayListIndex =  counter;
+	        GL11.glNewList(counter, GL11.GL_COMPILE); {
 	        	OBJLoader.ParseFromFile("OBJ/mushroom_medium.obj").draw();
 	        } GL11.glEndList();
-	        displayLists.put("LMushroom", 4);
-	        GL11.glNewList(3, GL11.GL_COMPILE); {
+	        displayLists.put("lMushroom", ++counter);
+	        GL11.glNewList(counter, GL11.GL_COMPILE); {
 	        	OBJLoader.ParseFromFile("OBJ/mushroom_high.obj").draw();
 	        } GL11.glEndList();
 	        
-	        displayLists.put("butterflyWing", 5);
-	        GL11.glNewList(4, GL11.GL_COMPILE); {
-	        	OBJLoader.ParseFromFile("OBJ/butterfly.obj").draw();
+	        displayLists.put("lButterflyWing", ++counter);
+	        Butterfly.leftWingDisplayIndex =  counter;
+	        GL11.glNewList(counter, GL11.GL_COMPILE); {
+	        	OBJLoader.ParseFromFile("OBJ/leftButterfly.obj").draw();
+	        } GL11.glEndList();
+	        
+	        displayLists.put("rButterflyWing", ++counter);
+	        Butterfly.rightWingDisplayIndex =  counter;
+	        GL11.glNewList(counter, GL11.GL_COMPILE); {
+	        	OBJLoader.ParseFromFile("OBJ/rightButterfly.obj").draw();
 	        } GL11.glEndList();
 	        
 	    }
@@ -136,48 +207,130 @@ public class MainScene extends GraphicsLab
     	
     	{ // Ground Planes
     	 	renderInstances.add(new RenderInstance(displayLists.get("plane"),       //displayListIndex
-    											   new Vector3f(-10.0f,0.0f,-10.0f),//position
+    											   new Vector3f(-15.0f,0.0f,-15.0f),//position
 							    				   new Vector3f(0f,0f,0f),          //rotation
-							    				   new Vector3f(20f,1f,20f),        //scale
+							    				   new Vector3f(),   				//rotation origin
+							    				   new Vector3f(30f,1f,30f),        //scale
 							    				   Colour.WHITE,     	            //colour
-							    				   groundTextures));                //texture
+							    				   false,							//disable lighting
+							    				   groundTextures, 					//texture
+							    				   null));               			//children
+    	 								
     		
     		renderInstances.add(new RenderInstance(displayLists.get("plane"), 	   //displayListIndex
-												   new Vector3f(10.0f,0.0f,-10.0f),//position
+												   new Vector3f(15.0f,0.0f,-15.0f),//position
 								 				   new Vector3f(0f,0f,0f),         //rotation
-								 				   new Vector3f(20f,1f,20f),       //scale
+							    				   new Vector3f(),   			   //rotation origin
+								 				   new Vector3f(30f,1f,30f),       //scale
 								 				   Colour.WHITE,     	           //colour
-								 				   groundTextures));               //texture
+												   false,						   //disable lighting
+								 				   groundTextures,                 //texture
+								 				   null));               		   //children
     		
     		renderInstances.add(new RenderInstance(displayLists.get("plane"),      //displayListIndex
-												   new Vector3f(-10.0f,0.0f,10.0f),//position
+												   new Vector3f(-15.0f,0.0f,15.0f),//position
 								 				   new Vector3f(0f,0f,0f),         //rotation
-								 				   new Vector3f(20f,1f,20f),       //scale
+							    				   new Vector3f(),   			   //rotation origin
+								 				   new Vector3f(30f,1f,30f),       //scale
 								 				   Colour.WHITE,     	           //colour
-								 				   groundTextures));               //texture   
+												   false,						   //disable lighting
+								 				   groundTextures,                 //texture   
+								 				   null));               		   //children
     		
     		renderInstances.add(new RenderInstance(displayLists.get("plane"),      //displayListIndex
-												   new Vector3f(10.0f,0.0f,10.0f), //position
+												   new Vector3f(15.0f,0.0f,15.0f), //position
 								 				   new Vector3f(0f,0f,0f),         //rotation
-								 				   new Vector3f(20f,1f,20f),       //scale
+							    				   new Vector3f(),   			   //rotation origin
+								 				   new Vector3f(30f,1f,30f),       //scale
 								 				   Colour.WHITE,     	           //colour
-								 				   groundTextures));               //texture   
+												   false,						   //disable lighting
+								 				   groundTextures,                 //texture   
+								 				   null));               		   //children
     		
-    		renderInstances.add(new RenderInstance(displayLists.get("butterflyWing"), //displayListIndex
-												   new Vector3f(0.0f,1.0f,0.0f),   //position
-								 				   new Vector3f(0f,0f,0f),         //rotation
-								 				   new Vector3f(1f,1f,1f),         //scale
-								 				   Colour.WHITE,     	           //colour
-								 				   groundTextures));               //texture   
     	}
     	
-    	//Generate Mushrooms
+    	{ // Big Mushrooms
+	    	renderInstances.add(new RenderInstance(displayLists.get("lMushroom"),      //displayListIndex
+					   new Vector3f(25.0f,0.0f,25.0f),  //position
+					   new Vector3f(0f,0f,0f),          //rotation
+					   null,   						    //rotation origin
+					   new Vector3f(100f,125f,100f),    //scale
+					   Colour.WHITE,     	            //colour
+					   false,							//disable lighting
+					   bigMushroomTexture,              //texture   
+					   null));               		    //children
+	    	renderInstances.add(new RenderInstance(displayLists.get("mMushroom"),      //displayListIndex
+					   new Vector3f(15.0f,0.0f,20.0f),  //position
+					   new Vector3f(0f,0f,10f),         //rotation
+					   null,   			  				//rotation origin
+					   new Vector3f(25f,25f,25f),       //scale
+					   Colour.WHITE,     	            //colour
+					   false,							//disable lighting
+					   bigMushroomTexture,              //texture   
+					   null));               		    //children
+	    	
+	    	renderInstances.add(new RenderInstance(displayLists.get("mMushroom"),      //displayListIndex
+					   new Vector3f(-25.0f,0.0f,-25.0f),//position
+					   new Vector3f(0f,0f,0f),          //rotation
+					   null,   						    //rotation origin
+					   new Vector3f(50f,50f,50f),       //scale
+					   Colour.WHITE,     	            //colour
+					   false,							//disable lighting
+					   bigMushroomTexture,              //texture   
+					   null));               		    //children
+	 	
+	    	renderInstances.add(new RenderInstance(displayLists.get("mMushroom"),      //displayListIndex
+					   new Vector3f(25.0f,0.0f,-25.0f), //position
+					   new Vector3f(0f,0f,0f),          //rotation
+					   null,   			    			//rotation origin
+					   new Vector3f(40f,40f,40f),       //scale
+					   Colour.WHITE,     	            //colour
+					   false,							//disable lighting
+					   bigMushroomTexture,              //texture   
+					   null)); 
+	    	renderInstances.add(new RenderInstance(displayLists.get("mMushroom"),      //displayListIndex
+					   new Vector3f(-25.0f,0.0f,25.0f), //position
+					   new Vector3f(0f,0f,0f),          //rotation
+					   null,   			    			//rotation origin
+					   new Vector3f(45f,45f,45f),       //scale
+					   Colour.WHITE,     	            //colour
+					   false,							//disable lighting
+					   bigMushroomTexture,              //texture   
+					   null));               		    //children
+    	}
+    	
+    	{ // Butterflies with random starting rotations
+    		Random rand = new Random();
+        	
+        	renderInstances.add(	new Butterfly(new Vector3f(10f,14f,0f),			//position
+        							new Vector3f(0f,  rand.nextFloat()* 360, 0f),	//start rotation
+        							new Vector3f(0,0,0)));							//rotation origin
+        	
+        	renderInstances.add(	new Butterfly(new Vector3f(7f,10f,0f),			//position
+    								new Vector3f(0f, rand.nextFloat()* 360, 0f),	//start rotation
+    								new Vector3f(0,0,0)));							//rotation origin
+        	
+        	renderInstances.add(	new Butterfly(new Vector3f(15f,20f,0f),			//position
+    								new Vector3f(0f, rand.nextFloat()* 360, 0f),	//start rotation
+    								new Vector3f(0,0,0)));							//rotation origin
+        	
+        	renderInstances.add(	new Butterfly(new Vector3f(12f,25f,0f),			//position
+    								new Vector3f(0f, rand.nextFloat()* 360, 0f),	//start rotation
+    								new Vector3f(0,0,0)));							//rotation origin
+    	}
+    	
+    	
+    	
+    	
+    	
+    	//Generate Small Mushrooms
     		
     	for(int x = 0; x < mushroomFieldWidth; x++) {
         	for(int z = 0; z < mushroomFieldHeigth; z++) {
 	        	Mushroom m = new Mushroom(new Vector3f((x) - mushroomFieldWidth / 2,
 	        										   0,
 	        										   (z) - mushroomFieldHeigth / 2));
+	        	m.setTexture(smallMushroomTexture);
 	        	renderInstances.add(m);
         	}
         }

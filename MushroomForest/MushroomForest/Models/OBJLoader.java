@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 
 import GraphicsLab.Vertex;
-import MushroomForest.Utill.Face;
 
 /**
  * This class is OBJ loader that can parse OBJ data into a model
- * This class is not a full OBJ loader and expects a OBJ file with Vertexes, Texture Coordinates, and Faces in (v/vt) format
+ * This class is not a full OBJ loader and expects a OBJ file with Vertexes, Texture Coordinates, and Faces in (v) or (v/vt) or (v/vn/vt) format
  * @author Jedd Morgan
  *
  */
@@ -49,6 +49,7 @@ public final class OBJLoader
 	private static Model ParseModel(String[] lines)
 	{
 		List<Vertex> vertexes = new ArrayList<Vertex>();;
+		List<Vector3f> vertexNormals = new ArrayList<Vector3f>();
 		List<Vector2f> textureCoordinates = new ArrayList<Vector2f>();
 		List<Face> faces = new ArrayList<Face>();
 		
@@ -67,8 +68,14 @@ public final class OBJLoader
 				textureCoordinates.add(new Vector2f(Float.parseFloat(parameters[1]),
 											        Float.parseFloat(parameters[2])));
 				break;
+			case "vn":
+				vertexNormals.add(new Vector3f(	Float.parseFloat(parameters[1]),
+					    						Float.parseFloat(parameters[2]),
+					    						Float.parseFloat(parameters[3])));
+				break;
 			case "f":
 				List<Integer> vertexIndecies = new ArrayList<Integer>();
+				List<Integer> vertexNormalIndecies = new ArrayList<Integer>();
 				List<Integer> textureCoordinateIndecies = new ArrayList<Integer>();
 				
 				for(int i = 1; i < parameters.length; i++)
@@ -76,22 +83,27 @@ public final class OBJLoader
 					String[] arr = parameters[i].split("/");
 					vertexIndecies			 .add(Integer.parseInt(arr[0]));
 					
-					if(arr.length == 2) {
+					
+					if(arr.length >= 2) {
 						textureCoordinateIndecies.add(Integer.parseInt(arr[1]));
-					} if(arr.length == 3) {
-						textureCoordinateIndecies.add(Integer.parseInt(arr[2]));
+						if(arr.length == 3) {
+							vertexNormalIndecies.add(Integer.parseInt(arr[2]));
+						}
 					}
+					
 					
 					
 				}
 				faces.add(new Face(vertexIndecies.toArray(new Integer[vertexIndecies.size()]),
-						  	       vertexIndecies.toArray(new Integer[vertexIndecies.size()])));
+								   vertexNormalIndecies.toArray(new Integer[vertexNormalIndecies.size()]),
+								   textureCoordinateIndecies.toArray(new Integer[textureCoordinateIndecies.size()])));
 				break;
 			}
 		}
 		
 		
 		return new Model(vertexes.toArray(new Vertex[vertexes.size()]),
+						 vertexNormals.toArray(new Vector3f[vertexNormals.size()]),
 				  		 textureCoordinates.toArray(new Vector2f[textureCoordinates.size()]),
 				  		 faces.toArray(new Face[faces.size()]));
 		

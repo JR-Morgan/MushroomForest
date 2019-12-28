@@ -1,14 +1,14 @@
 package MushroomForest.Models;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Console;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 
 import GraphicsLab.Normal;
 import GraphicsLab.Vertex;
-import MushroomForest.Utill.Face;
+import MushroomForest.Models.Face;
 
 /**
  * This class encapsulates a 3D Model storing it's vertexes, faces, and normals.<br>
@@ -18,6 +18,8 @@ public class Model
 {
 	protected Vertex[] vertexes;
 	
+	protected Vector3f[] vertexNormals;
+	
 	protected Vector2f[] uv;
 	
 	protected Face[] faces;
@@ -26,11 +28,16 @@ public class Model
 	
 	
 	public Model(Vertex[] vertexes, Vector2f[] uv, Face[] faces) {
-		this(vertexes, uv, faces, calculateNormals(vertexes, faces));
+		this(vertexes, new Vector3f[0] , uv, faces, calculateNormals(vertexes, faces));
 	}
 	
-	public Model(Vertex[] vertexes, Vector2f[] uv, Face[] faces, Normal[] normals) {
+	public Model(Vertex[] vertexes, Vector3f[] vertexNormals, Vector2f[] uv, Face[] faces) {
+		this(vertexes, vertexNormals, uv, faces, calculateNormals(vertexes, faces));
+	}
+	
+	public Model(Vertex[] vertexes, Vector3f[] vertexNormals, Vector2f[] uv, Face[] faces, Normal[] normals) {
 		this.vertexes = vertexes;
+		this.vertexNormals = vertexNormals;
 		this.uv = uv;
 		this.faces = faces;
 		this.normals = normals;
@@ -41,17 +48,27 @@ public class Model
 	 */
 	public void draw()
     {
+		
 		for(int i = 0; i < faces.length; i++) {
+    		Face face = faces[i];
     		
     		GL11.glBegin(GL11.GL_POLYGON);
             {              
-                normals[i].submit();
                 
                 for(int j = 0; j < faces[i].v.length; j++) {
+                	
                 	if(uv.length > 0) {
-                		GL11.glTexCoord2f(uv[faces[i].vt[j]-1].getX(),uv[faces[i].vt[j]-1].getY());
+                		
+                		GL11.glTexCoord2f(uv[face.vt[j]-1].getX(),uv[face.vt[j]-1].getY());
                 	}
-                    vertexes[faces[i].v[j]-1].submit();
+                	if(vertexNormals.length > 0) {
+                		int vni = face.vn[j]-1;
+                		
+                		GL11.glNormal3f(vertexNormals[vni].getX(),vertexNormals[vni].getY(),vertexNormals[vni].getZ());
+                	} else {
+                		normals[i].submit();
+                	}
+                    vertexes[face.v[j]-1].submit();
                 }
                 
             }

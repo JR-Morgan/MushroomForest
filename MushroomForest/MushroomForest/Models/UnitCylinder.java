@@ -3,7 +3,7 @@ package MushroomForest.Models;
 import org.lwjgl.util.vector.Vector2f;
 
 import GraphicsLab.Vertex;
-import MushroomForest.Utill.Face;
+import MushroomForest.Models.Face;
 
 /**
  * Models a cylinder of unit size<br>

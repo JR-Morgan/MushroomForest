@@ -3,9 +3,6 @@
  * 23/08/2007
  */
 package GraphicsLab;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -207,7 +204,13 @@ public abstract class GraphicsLab
     private void createWindow() throws Exception
     {
         Display.setFullscreen(viewingMode == FULLSCREEN);
-        DisplayMode availableModes[] = Display.getAvailableDisplayModes();
+        
+        
+        //This is a much better way to specify the display mode if you are just going to hard code it to a specific value
+        //getting a list of all display modes can take a while for some monitors(multiple seconds freeze time)
+        displayMode = new DisplayMode(2560,1440);
+        
+        /*DisplayMode availableModes[] = Display.getAvailableDisplayModes();
         
         //TODO: consider removing output; could use selection GUI, or use defaults - see how it works this year
         System.out.println("Available display modes:");
@@ -218,8 +221,8 @@ public abstract class GraphicsLab
         // Note: In Linux, max colour depth is 24, not 32
         for(int i = 0; i < availableModes.length; i++)
         {
-            if(availableModes[i].getWidth() == 1920//800
-                && availableModes[i].getHeight() == 1080//600
+            if(availableModes[i].getWidth() == //800
+                && availableModes[i].getHeight() == //600
                 && (availableModes[i].getBitsPerPixel() == 32 || availableModes[i].getBitsPerPixel() == 24))
             {
                 displayMode = availableModes[i];
@@ -227,7 +230,7 @@ public abstract class GraphicsLab
                 System.out.println("Selected display mode: " + displayMode.toString() + "\n");
                 break;
             }
-        }
+        }*/
         
         // Window height-to-width ratio
         hwratio = (float)displayMode.getWidth() / (float) displayMode.getHeight();
