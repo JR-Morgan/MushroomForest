@@ -7,6 +7,7 @@ This project was created using [Light Weight Java Game Library 2](http://legacy.
 
 ![Screenshot from the animation showing butterflies, large and small mushrooms](https://imgur.com/wM65PS9.jpg "Screenshot from the animation")
 
+[Link to the javadoc](https://jr-morgan.github.io/MushroomForest/)
 
 ## Controls
 
